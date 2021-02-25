@@ -1,4 +1,4 @@
-24 - RGB & TinyYoloV4 decoding on device
+22.2 - RGB & TinyYoloV4 decoding on device
 ==========================================
 
 This example shows how to run TinyYoloV4 on the RGB input frame, and how to display both the RGB
@@ -33,9 +33,9 @@ This example also requires YOLOv4-tiny blob (:code:`tiny-yolo-v4_openvino_2021.2
 Source code
 ###########
 
-Also `available on GitHub <https://github.com/luxonis/depthai-python/blob/gen2_develop/examples/24_tiny_yolo_v4_device_side_decoding.py>`__
+Also `available on GitHub <https://github.com/luxonis/depthai-python/blob/gen2_develop/examples/22_2_tiny_yolo_v4_device_side_decoding.py>`__
 
-.. literalinclude:: ../../../examples/24_tiny_yolo_v4_device_side_decoding.py
+.. literalinclude:: ../../../examples/22_2_tiny_yolo_v4_device_side_decoding.py
    :language: python
    :linenos:
 
