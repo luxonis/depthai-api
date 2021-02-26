@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.4) # For Hunter
 set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_LIST_DIR}/cmake/toolchain/pic.cmake" CACHE STRING "")
 
 # Build dependencies as 'Release' only by default (if not MSVC, as it requires same debug level for libraries to be linked against)
-if(NOT MSVC)
+if(NOT WIN32)
     set(HUNTER_CONFIGURATION_TYPES "Release" CACHE STRING "Hunter dependencies list of build configurations")
 endif()
 
