@@ -30,10 +30,22 @@ For additional information, please follow :ref:`Python API installation guide <I
 Source code
 ###########
 
-Also `available on GitHub <https://github.com/luxonis/depthai-python/blob/gen2_develop/examples/01_rgb_preview.py>`__
+.. tabs::
 
-.. literalinclude:: ../../../examples/01_rgb_preview.py
-   :language: python
-   :linenos:
+    .. tab:: C++
+
+        Also `available on GitHub <https://github.com/luxonis/depthai-core/blob/gen2_develop/examples/src/camera_preview_example.cpp>`__
+
+        .. literalinclude:: ../../../depthai-core/examples/src/camera_preview_example.cpp
+           :language: python
+           :linenos:
+
+    .. tab:: Python
+
+        Also `available on GitHub <https://github.com/luxonis/depthai-python/blob/gen2_develop/examples/01_rgb_preview.py>`__
+
+        .. literalinclude:: ../../../examples/01_rgb_preview.py
+           :language: python
+           :linenos:
 
 .. include::  /includes/footer-short.rst
