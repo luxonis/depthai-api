@@ -49,15 +49,8 @@ detectionNetwork = pipeline.createYoloDetectionNetwork()
 detectionNetwork.setConfidenceThreshold(0.5)
 detectionNetwork.setNumClasses(80)
 detectionNetwork.setCoordinateSize(4)
-anchors = np.array([10,14, 23,27, 37,58, 81,82, 135,169, 344,319])
-detectionNetwork.setAnchors(anchors)
-anchorMasks26 = np.array([1,2,3])
-anchorMasks13 = np.array([3,4,5])
-anchorMasks = {
-    "side26": anchorMasks26,
-    "side13": anchorMasks13,
-}
-detectionNetwork.setAnchorMasks(anchorMasks)
+detectionNetwork.setAnchors(np.array([10,14, 23,27, 37,58, 81,82, 135,169, 344,319]))
+detectionNetwork.setAnchorMasks({ "side26": np.array([1,2,3]), "side13": np.array([3,4,5]) })
 detectionNetwork.setIouThreshold(0.5)
 
 detectionNetwork.setBlobPath(tiny_yolo_v4_path)
@@ -124,7 +117,7 @@ with dai.Device(pipeline) as device:
             height = frame.shape[0]
             width  = frame.shape[1]
             for bbox in bboxes:
-                #denormalize bounging box
+                # denormalize bounding box
                 x1 = int(bbox.xmin * width)
                 x2 = int(bbox.xmax * width)
                 y1 = int(bbox.ymin * height)
