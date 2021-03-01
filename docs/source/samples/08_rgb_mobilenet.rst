@@ -32,10 +32,22 @@ This example also requires MobilenetSDD blob (:code:`mobilenet.blob` file) to wo
 Source code
 ###########
 
-Also `available on GitHub <https://github.com/luxonis/depthai-python/blob/gen2_develop/examples/08_rgb_mobilenet.py>`__
+.. tabs::
 
-.. literalinclude:: ../../../examples/08_rgb_mobilenet.py
-   :language: python
-   :linenos:
+    .. tab:: C++
+
+        Also `available on GitHub <https://github.com/luxonis/depthai-core/blob/gen2_develop/examples/src/08_rgb_mobilenet.cpp>`__
+
+        .. literalinclude:: ../../../depthai-core/examples/src/08_rgb_mobilenet.cpp
+           :language: python
+           :linenos:
+
+    .. tab:: Python
+
+        Also `available on GitHub <https://github.com/luxonis/depthai-python/blob/gen2_develop/examples/08_rgb_mobilenet.py>`__
+
+        .. literalinclude:: ../../../examples/08_rgb_mobilenet.py
+           :language: python
+           :linenos:
 
 .. include::  /includes/footer-short.rst

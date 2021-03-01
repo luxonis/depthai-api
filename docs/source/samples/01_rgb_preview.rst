@@ -34,7 +34,7 @@ Source code
 
     .. tab:: C++
 
-        Also `available on GitHub <https://github.com/luxonis/depthai-core/blob/gen2_develop/examples/src/camera_preview_example.cpp>`__
+        Also `available on GitHub <https://github.com/luxonis/depthai-core/blob/gen2_develop/examples/src/01_rgb_preview.cpp>`__
 
         .. literalinclude:: ../../../depthai-core/examples/src/01_rgb_preview.cpp
            :language: python

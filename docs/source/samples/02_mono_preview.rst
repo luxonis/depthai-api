@@ -35,7 +35,7 @@ Also `available on GitHub <https://github.com/luxonis/depthai-python/blob/gen2_d
 
     .. tab:: C++
 
-        Also `available on GitHub <https://github.com/luxonis/depthai-core/blob/gen2_develop/examples/src/mono_camera_example.cpp>`__
+        Also `available on GitHub <https://github.com/luxonis/depthai-core/blob/gen2_develop/examples/src/02_mono_preview.cpp>`__
 
         .. literalinclude:: ../../../depthai-core/examples/src/02_mono_preview.cpp
            :language: python
