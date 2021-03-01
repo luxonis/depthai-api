@@ -32,8 +32,23 @@ Source code
 
 Also `available on GitHub <https://github.com/luxonis/depthai-python/blob/gen2_develop/examples/16_device_queue_event.py>`__
 
-.. literalinclude:: ../../../examples/16_device_queue_event.py
-   :language: python
-   :linenos:
+
+.. tabs::
+
+    .. tab:: C++
+
+        Also `available on GitHub <https://github.com/luxonis/depthai-core/blob/gen2_develop/examples/src/16_device_queue_event.cpp>`__
+
+        .. literalinclude:: ../../../depthai-core/examples/src/16_device_queue_event.cpp
+           :language: python
+           :linenos:
+
+    .. tab:: Python
+
+        Also `available on GitHub <https://github.com/luxonis/depthai-python/blob/gen2_develop/examples/16_device_queue_event.py>`__
+
+        .. literalinclude:: ../../../examples/16_device_queue_event.py
+           :language: python
+           :linenos:
 
 .. include::  /includes/footer-short.rst

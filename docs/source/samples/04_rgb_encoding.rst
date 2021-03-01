@@ -40,8 +40,22 @@ Source code
 
 Also `available on GitHub <https://github.com/luxonis/depthai-python/blob/gen2_develop/examples/04_rgb_encoding.py>`__
 
-.. literalinclude:: ../../../examples/04_rgb_encoding.py
-   :language: python
-   :linenos:
+.. tabs::
+
+    .. tab:: C++
+
+        Also `available on GitHub <https://github.com/luxonis/depthai-core/blob/gen2_develop/examples/src/04_rgb_encoding.cpp>`__
+
+        .. literalinclude:: ../../../depthai-core/examples/src/04_rgb_encoding.cpp
+           :language: python
+           :linenos:
+
+    .. tab:: Python
+
+        Also `available on GitHub <https://github.com/luxonis/depthai-python/blob/gen2_develop/examples/04_rgb_encoding.py>`__
+
+        .. literalinclude:: ../../../examples/04_rgb_encoding.py
+           :language: python
+           :linenos:
 
 .. include::  /includes/footer-short.rst
