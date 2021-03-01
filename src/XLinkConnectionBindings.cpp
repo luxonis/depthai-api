@@ -13,6 +13,7 @@ void XLinkConnectionBindings::bind(pybind11::module& m){
         .def(py::init<>())
         .def_readwrite("desc", &DeviceInfo::desc)
         .def_readwrite("state", &DeviceInfo::state)
+        .def("getMxId", &DeviceInfo::getMxId)
         ;
 
     py::class_<deviceDesc_t>(m, "DeviceDesc")

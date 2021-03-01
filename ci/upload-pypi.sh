@@ -1,4 +1,7 @@
 #!/bin/bash
+
+python3 -m pip install -U pip
+python3 -m pip install -U setuptools
 python3 -m pip install -U twine
 
 # Uploads prebuilt binary distribution

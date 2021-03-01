@@ -23,5 +23,8 @@ depthai-core/build/
 # builds
 _builds/
 
+#git
+*.orig
+
 #ci
 wheelhouse/

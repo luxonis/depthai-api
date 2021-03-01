@@ -1,11 +1,16 @@
-include README.md LICENSE
+include README.md LICENSE CMakeLists.txt pyproject.toml
 include find_version.py
+graft cmake
 graft generated
-global-include CMakeLists.txt *.cmake
-recursive-include src *
-recursive-include pybind11/include *.h
+graft ci
+graft external
+graft src
 graft depthai-core
-prune depthai-core/build
+prune depthai-core/build*
+prune depthai-core/tests*
+prune depthai-core/examples*
 prune build
 prune wheelhouse
 prune dist
+prune tests
+prune examples

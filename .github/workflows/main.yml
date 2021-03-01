@@ -1,4 +1,4 @@
-name: Python Wheel CI
+name: Depthai Python CI/CD
 
 # Controls when the action will run. Triggers the workflow on push
 
@@ -7,14 +7,94 @@ name: Python Wheel CI
 # as self-hosted runners are used, and security policy for them has not been yet determined by GitHub
 # pay close attention to not enable workflows on pull_request events
 # TLDR: do NOT add 'pull_request' here for the time being
-on: [push] 
+on:
+  workflow_dispatch:
+  push:
+    branches:
+    - main
+    - develop
+    - gen2
+    - gen2_develop
+    tags:
+    - 'v*'
+
 ###################################
 ###################################
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
+
+  # Job which builds docstrings for the rest of the wheel builds
+  build-docstrings:
+    runs-on: macos-latest
+    steps:
+      - name: Cache .hunter folder
+        uses: actions/cache@v2
+        with:
+          path: ~/.hunter/
+          key: hunter-clang
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with: 
+          python-version: 3.8
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          brew install libusb
+          python -m pip install git+git://github.com/luxonis/pybind11_mkdoc.git@master
+      - name: Configure project
+        run: cmake -S . -B build -DDEPTHAI_PYTHON_BUILD_DOCSTRINGS=ON -DDEPTHAI_PYTHON_FORCE_DOCSTRINGS=ON -DDEPTHAI_PYTHON_DOCSTRINGS_OUTPUT="$PWD/docstrings/depthai_python_docstring.hpp"
+      - name: Build target 'pybind11_mkdoc'
+        run: cmake --build build --parallel --target pybind11_mkdoc
+      - name: Upload docstring artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: docstrings
+          path: docstrings/
+          retention-days: 1
+
+  # This job builds wheels for armhf arch (RPi)
+  build-linux-armhf:
+    needs: build-docstrings
+    runs-on: luxonis-armhf
+    container: 
+      image: registry.gitlab.com/luxonis/depthai-crosscompile/debian-buster
+      # Mount local hunter cache directory, instead of transfering to Github and back
+      volumes:
+        - /.hunter:/github/home/.hunter
+    steps:
+      - name: Print home directory
+        run: echo Home directory inside container $HOME
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+        
+      - uses: actions/download-artifact@v2
+        with:
+          name: 'docstrings'
+          path: docstrings
+      - name: Specify docstring to use while building the wheel
+        run: echo "DEPTHAI_PYTHON_DOCSTRINGS_INPUT=$PWD/docstrings/depthai_python_docstring.hpp" >> $GITHUB_ENV
+
+      - name: Append build hash if not a tagged commit
+        if: startsWith(github.ref, 'refs/tags/v') != true
+        run: echo "BUILD_COMMIT_HASH=${{github.sha}}" >> $GITHUB_ENV
+      - name: Building wheel
+        run: python3 -m pip wheel . -w ./wheelhouse/
+      - name: Auditing wheel
+        run: for whl in wheelhouse/*.whl; do auditwheel repair "$whl" --plat linux_armv7l -w wheelhouse/audited/; done
+      - name: Archive wheel artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: audited-wheels
+          path: wheelhouse/audited/
+
   # This job builds wheels for Windows x86_64 arch
   build-windows-x86_64:
+    needs: build-docstrings
     runs-on: windows-latest
     strategy:
       matrix:
@@ -29,6 +109,14 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: 'recursive'
+
+      - uses: actions/download-artifact@v2
+        with:
+          name: 'docstrings'
+          path: docstrings
+      - name: Specify docstring to use while building the wheel
+        run: echo "DEPTHAI_PYTHON_DOCSTRINGS_INPUT=$PWD/docstrings/depthai_python_docstring.hpp" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
         with: 
@@ -50,6 +138,7 @@ jobs:
 
   # This job builds wheels for macOS x86_64 arch
   build-macos-x86_64:
+    needs: build-docstrings
     runs-on: macos-latest
     strategy:
       matrix:
@@ -63,6 +152,14 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: 'recursive'
+
+      - uses: actions/download-artifact@v2
+        with:
+          name: 'docstrings'
+          path: docstrings
+      - name: Specify docstring to use while building the wheel
+        run: echo "DEPTHAI_PYTHON_DOCSTRINGS_INPUT=$PWD/docstrings/depthai_python_docstring.hpp" >> $GITHUB_ENV
+
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
         with: 
@@ -89,6 +186,7 @@ jobs:
 
   # This job builds wheels for x86_64 arch
   build-linux-x86_64:
+    needs: build-docstrings
     runs-on: ubuntu-latest
     container:
       image: quay.io/pypa/manylinux2014_x86_64
@@ -111,6 +209,14 @@ jobs:
           ln -s /opt/python/cp38-cp38/bin/cmake /bin/
       - name: Create folder structure
         run: mkdir -p wheelhouse/audited/
+
+      - uses: actions/download-artifact@v2
+        with:
+          name: 'docstrings'
+          path: docstrings
+      - name: Specify docstring to use while building the wheel
+        run: echo "DEPTHAI_PYTHON_DOCSTRINGS_INPUT=$PWD/docstrings/depthai_python_docstring.hpp" >> $GITHUB_ENV
+
       - name: Append build hash if not a tagged commit
         if: startsWith(github.ref, 'refs/tags/v') != true
         run: echo "BUILD_COMMIT_HASH=${{github.sha}}" >> $GITHUB_ENV
@@ -128,56 +234,31 @@ jobs:
           name: audited-wheels
           path: wheelhouse/audited/
 
-  # This job builds wheels for armhf arch
-  build-linux-armhf:
-    runs-on: luxonis-armhf
-    container: registry.gitlab.com/luxonis/depthai-crosscompile/debian-buster
-    steps:
-      - name: Cache .hunter folder
-        uses: actions/cache@v2
-        with:
-          path: ~/.hunter/
-          key: hunter-armhf
-      - uses: actions/checkout@v2
-        with:
-          submodules: 'recursive'
-      - name: Append build hash if not a tagged commit
-        if: startsWith(github.ref, 'refs/tags/v') != true
-        run: echo "BUILD_COMMIT_HASH=${{github.sha}}" >> $GITHUB_ENV
-      - name: Building wheel
-        run: python3 -m pip wheel . -w ./wheelhouse/
-      - name: Auditing wheel
-        run: for whl in wheelhouse/*.whl; do auditwheel repair "$whl" --plat linux_armv7l -w wheelhouse/audited/; done
-      - name: Archive wheel artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: audited-wheels
-          path: wheelhouse/audited/
 
-  # Run tests
-  tests:
-    runs-on: luxonis-arm-tests
-    needs: [build-linux-armhf, build-windows-x86_64, build-macos-x86_64, build-linux-x86_64]
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          submodules: 'recursive'
-      - uses: actions/download-artifact@v2
-        with:
-          name: audited-wheels
-          path: wheels/depthai/
-      - name: List files
-        run: ls -lah
-      - name: install DepthAI
-        run: python3.7 -m pip install depthai --no-index --find-links file://`pwd`/wheels/depthai/
-      - name: Run tests
-        run: python3.7 tests/test.py
+  # # Run tests
+  # tests:
+  #   runs-on: luxonis-arm-tests
+  #   needs: [build-linux-armhf, build-windows-x86_64, build-macos-x86_64, build-linux-x86_64]
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #       with:
+  #         submodules: 'recursive'
+  #     - uses: actions/download-artifact@v2
+  #       with:
+  #         name: audited-wheels
+  #         path: wheels/depthai/
+  #     - name: List files
+  #       run: ls -lah
+  #     - name: install DepthAI
+  #       run: python3.7 -m pip install depthai --no-index --find-links file://`pwd`/wheels/depthai/
+  #     - name: Run tests
+  #       run: python3.7 tests/test.py
 
   # Deploy to artifactory
   deploy-artifacts:
     if: startsWith(github.ref, 'refs/tags/v') != true
     runs-on: ubuntu-latest
-    needs: tests
+    needs: [build-linux-armhf, build-windows-x86_64, build-macos-x86_64, build-linux-x86_64]
     steps:
       - uses: actions/checkout@v2
         with:
@@ -199,7 +280,7 @@ jobs:
   deploy-pypi:
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
-    needs: tests
+    needs: [build-linux-armhf, build-windows-x86_64, build-macos-x86_64, build-linux-x86_64]
     steps:
       - uses: actions/checkout@v2
         with:
@@ -216,4 +297,39 @@ jobs:
           PYPI_SERVER: ${{ secrets.PYPI_SERVER }}
           PYPI_USER: ${{ secrets.PYPI_USER }}
           PYPI_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [deploy-pypi]
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: 'recursive'
+    
+    - name: Get tag version
+      id: tag
+      uses: battila7/get-version-action@v2
+
+    - name: Check if version matches
+      run: python3.8 -c 'import find_version as v; exit(0) if "${{ steps.tag.outputs.version-without-v }}" == v.get_package_version() else exit(1)'
+
+    # Create GitHub release
+    - uses: actions/create-release@master
+      id: createRelease
+      name: Create ${{ steps.releaseNote.outputs.version }} depthai-core release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        body: |
+          ## Features
+
+          ## Bugs
+
+          ## Misc
+
+        draft: true
 
