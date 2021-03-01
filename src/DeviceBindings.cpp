@@ -65,72 +65,10 @@ std::vector<std::string> deviceGetQueueEventsHelper(dai::Device& d, const std::v
         // reacquires python GIL for PyErr_CheckSignals call
         // check if interrupt triggered in between
         if (PyErr_CheckSignals() != 0) throw py::error_already_set();
-    } while(steady_clock::now() - startTime < timeout || unlimitedTimeout);
+    } while(unlimitedTimeout || steady_clock::now() - startTime < timeout);
     
     return std::vector<std::string>(); 
 }
-
-
-
-// Device wrapper. This wrapper keeps an unique_ptr and has the ability to destruct the underlying object
-class DeviceWrapper {
-    std::unique_ptr<dai::Device> pDevice;
-public:
-    // Wrapping function (methods)
-    template <typename Return, typename Class, typename... Args>
-    static auto wrap(Return (Class::*f)(Args...)) {
-        return [f](DeviceWrapper& dw, Args... args){ 
-            dw.check();
-            return (dw.pDevice.get()->*f)(args...);
-        };
-    }
-
-    // Wrapping function (const methods)
-    template <typename Return, typename Class, typename... Args>
-    static auto wrap(Return (Class::*f)(Args...) const) {
-        return [f](DeviceWrapper& dw, Args... args){ 
-            dw.check();
-            return (dw.pDevice.get()->*f)(args...);
-        };
-    }
-
-    // Wrapping function (functions)
-    template <typename Return, typename... Args>
-    static auto wrap(Return (*f)(Args...)) {
-        return [f](DeviceWrapper& dw, Args... args){ 
-            dw.check();
-            return (dw.pDevice.get()->*f)(args...);
-        };
-    }
-    
-    // Constructor wrapper - overload
-    static std::unique_ptr<DeviceWrapper> wrap(std::unique_ptr<dai::Device> ptr){
-        return std::make_unique<DeviceWrapper>(std::move(ptr));
-    }
-
-    // Constructor
-    DeviceWrapper(std::unique_ptr<dai::Device> ptr){
-        pDevice = std::move(std::move(ptr));
-    }
-
-    // Close function, destructs device
-    void close(){
-        pDevice = nullptr;
-    }
-
-    // check
-    void check(){
-        if(!pDevice){
-            throw std::invalid_argument("Device was already closed");
-        }
-    }
-
-    // Device reference
-    dai::Device& get(){
-        check();
-        return *pDevice;
-    }
-};
 
 
 void DeviceBindings::bind(pybind11::module& m){
@@ -139,11 +77,11 @@ void DeviceBindings::bind(pybind11::module& m){
 
 
     // Bind Device, using DeviceWrapper to be able to destruct the object by calling close()
-    py::class_<DeviceWrapper>(m, "Device", DOC(dai, Device))
+    py::class_<Device>(m, "Device")
         // Python only methods
         .def("__enter__", [](py::object obj){ return obj; })
-        .def("__exit__", [](DeviceWrapper& dw, py::object type, py::object value, py::object traceback) { dw.close(); })
-        .def("close", &DeviceWrapper::close)
+        .def("__exit__", [](Device& d, py::object type, py::object value, py::object traceback) { d.close(); })
+        .def("close", &Device::close, "Closes the connection to device. Better alternative is the usage of context manager: `with depthai.Device(pipeline) as device:`")
 
         //dai::Device methods
         //static (no need for the wrapper)
@@ -155,87 +93,79 @@ void DeviceBindings::bind(pybind11::module& m){
         .def_static("getDeviceByMxId", &Device::getDeviceByMxId, py::arg("mxId"), DOC(dai, Device, getDeviceByMxId))
         
         // methods
-        .def(py::init([](const Pipeline& pipeline){ return DeviceWrapper::wrap(deviceConstructorHelper(pipeline)); }), py::arg("pipeline"), DOC(dai, Device, Device))
+        .def(py::init([](const Pipeline& pipeline){ return deviceConstructorHelper(pipeline); }), py::arg("pipeline"), DOC(dai, Device, Device))
         .def(py::init([](const Pipeline& pipeline, bool usb2Mode){ 
             // Blocking constructor
-            return DeviceWrapper::wrap(deviceConstructorHelper(pipeline, std::string(""), usb2Mode)); 
+            return deviceConstructorHelper(pipeline, std::string(""), usb2Mode); 
         }), py::arg("pipeline"), py::arg("usb2Mode"), DOC(dai, Device, Device, 2))
         .def(py::init([](const Pipeline& pipeline, const std::string& pathToCmd){
             // Blocking constructor
-            return DeviceWrapper::wrap(deviceConstructorHelper(pipeline, pathToCmd)); 
+            return deviceConstructorHelper(pipeline, pathToCmd); 
         }), py::arg("pipeline"), py::arg("pathToCmd"), DOC(dai, Device, Device, 3))
         .def(py::init([](const Pipeline& pipeline, const DeviceInfo& deviceInfo, bool usb2Mode){
             // Non blocking constructor
-            return DeviceWrapper::wrap(std::unique_ptr<Device>(new Device(pipeline, deviceInfo, usb2Mode)));
+            return std::unique_ptr<Device>(new Device(pipeline, deviceInfo, usb2Mode));
         }), py::arg("pipeline"), py::arg("deviceDesc"), py::arg("usb2Mode") = false, DOC(dai, Device, Device, 4))
         .def(py::init([](const Pipeline& pipeline, const DeviceInfo& deviceInfo, std::string pathToCmd){
             // Non blocking constructor
-            return DeviceWrapper::wrap(std::unique_ptr<Device>(new Device(pipeline, deviceInfo, pathToCmd)));
+            return std::unique_ptr<Device>(new Device(pipeline, deviceInfo, pathToCmd));
         }), py::arg("pipeline"), py::arg("deviceDesc"), py::arg("pathToCmd"), DOC(dai, Device, Device, 5))
 
-        .def("isPipelineRunning", DeviceWrapper::wrap(&Device::isPipelineRunning), DOC(dai, Device, isPipelineRunning))
-        .def("startPipeline", DeviceWrapper::wrap(&Device::startPipeline), DOC(dai, Device, startPipeline))
+        .def("isPipelineRunning", &Device::isPipelineRunning, DOC(dai, Device, isPipelineRunning))
+        .def("startPipeline", &Device::startPipeline, DOC(dai, Device, startPipeline))
 
-        .def("getOutputQueue", DeviceWrapper::wrap(static_cast<std::shared_ptr<DataOutputQueue>(Device::*)(const std::string&)>(&Device::getOutputQueue)), py::arg("name"), DOC(dai, Device, getOutputQueue))
-        .def("getOutputQueue", DeviceWrapper::wrap(static_cast<std::shared_ptr<DataOutputQueue>(Device::*)(const std::string&, unsigned int, bool)>(&Device::getOutputQueue)), py::arg("name"), py::arg("maxSize"), py::arg("blocking") = true, DOC(dai, Device, getOutputQueue, 2))
-        .def("getOutputQueueNames", DeviceWrapper::wrap(&Device::getOutputQueueNames), DOC(dai, Device, getOutputQueueNames))
+        .def("getOutputQueue", static_cast<std::shared_ptr<DataOutputQueue>(Device::*)(const std::string&)>(&Device::getOutputQueue), py::arg("name"), DOC(dai, Device, getOutputQueue))
+        .def("getOutputQueue", static_cast<std::shared_ptr<DataOutputQueue>(Device::*)(const std::string&, unsigned int, bool)>(&Device::getOutputQueue), py::arg("name"), py::arg("maxSize"), py::arg("blocking") = true, DOC(dai, Device, getOutputQueue, 2))
+        .def("getOutputQueueNames", &Device::getOutputQueueNames, DOC(dai, Device, getOutputQueueNames))
 
-        .def("getInputQueue", DeviceWrapper::wrap(static_cast<std::shared_ptr<DataInputQueue>(Device::*)(const std::string&)>(&Device::getInputQueue)), py::arg("name"), DOC(dai, Device, getInputQueue))
-        .def("getInputQueue", DeviceWrapper::wrap(static_cast<std::shared_ptr<DataInputQueue>(Device::*)(const std::string&, unsigned int, bool)>(&Device::getInputQueue)), py::arg("name"), py::arg("maxSize"), py::arg("blocking") = true, DOC(dai, Device, getInputQueue, 2))
-        .def("getInputQueueNames", DeviceWrapper::wrap(&Device::getInputQueueNames), DOC(dai, Device, getInputQueueNames))
+        .def("getInputQueue", static_cast<std::shared_ptr<DataInputQueue>(Device::*)(const std::string&)>(&Device::getInputQueue), py::arg("name"), DOC(dai, Device, getInputQueue))
+        .def("getInputQueue", static_cast<std::shared_ptr<DataInputQueue>(Device::*)(const std::string&, unsigned int, bool)>(&Device::getInputQueue), py::arg("name"), py::arg("maxSize"), py::arg("blocking") = true, DOC(dai, Device, getInputQueue, 2))
+        .def("getInputQueueNames", &Device::getInputQueueNames, DOC(dai, Device, getInputQueueNames))
 
-        .def("getQueueEvents", [](DeviceWrapper& dw, const std::vector<std::string>& queueNames, std::size_t maxNumEvents, std::chrono::microseconds timeout) {
-            dw.check();
-            return deviceGetQueueEventsHelper(dw.get(), queueNames, maxNumEvents, timeout);
+        .def("getQueueEvents", [](Device& d, const std::vector<std::string>& queueNames, std::size_t maxNumEvents, std::chrono::microseconds timeout) {
+            return deviceGetQueueEventsHelper(d, queueNames, maxNumEvents, timeout);
         }, py::arg("queueNames"), py::arg("maxNumEvents") = std::numeric_limits<std::size_t>::max(), py::arg("timeout") = std::chrono::microseconds(-1), DOC(dai, Device, getQueueEvents))
-        
-        .def("getQueueEvents", [](DeviceWrapper& dw, std::string queueName, std::size_t maxNumEvents, std::chrono::microseconds timeout) {
-            dw.check();
-            return deviceGetQueueEventsHelper(dw.get(), std::vector<std::string>{queueName}, maxNumEvents, timeout);
+        .def("getQueueEvents", [](Device& d, std::string queueName, std::size_t maxNumEvents, std::chrono::microseconds timeout) {
+            return deviceGetQueueEventsHelper(d, std::vector<std::string>{queueName}, maxNumEvents, timeout);
         }, py::arg("queueName"), py::arg("maxNumEvents") = std::numeric_limits<std::size_t>::max(), py::arg("timeout") = std::chrono::microseconds(-1), DOC(dai, Device, getQueueEvents, 3))
-        
-        .def("getQueueEvents", [](DeviceWrapper& dw, std::size_t maxNumEvents, std::chrono::microseconds timeout) {
-            dw.check();
-            return deviceGetQueueEventsHelper(dw.get(), dw.get().getOutputQueueNames(), maxNumEvents, timeout);
+        .def("getQueueEvents", [](Device& d, std::size_t maxNumEvents, std::chrono::microseconds timeout) {
+            return deviceGetQueueEventsHelper(d, d.getOutputQueueNames(), maxNumEvents, timeout);
         }, py::arg("maxNumEvents") = std::numeric_limits<std::size_t>::max(), py::arg("timeout") = std::chrono::microseconds(-1), DOC(dai, Device, getQueueEvents, 4))
 
-        .def("getQueueEvent", [](DeviceWrapper& dw, const std::vector<std::string>& queueNames, std::size_t maxNumEvents, std::chrono::microseconds timeout) {
-            dw.check();
-            auto events = deviceGetQueueEventsHelper(dw.get(), queueNames, maxNumEvents, timeout);
+        .def("getQueueEvent", [](Device& d, const std::vector<std::string>& queueNames, std::chrono::microseconds timeout) {
+            auto events = deviceGetQueueEventsHelper(d, queueNames, std::numeric_limits<std::size_t>::max(), timeout);
             if(events.empty()) return std::string("");
             return events[0];
-        }, py::arg("queueNames"), py::arg("maxNumEvents") = std::numeric_limits<std::size_t>::max(), py::arg("timeout") = std::chrono::microseconds(-1), DOC(dai, Device, getQueueEvent))
-
-        .def("getQueueEvent", [](DeviceWrapper& dw, std::string queueName, std::size_t maxNumEvents, std::chrono::microseconds timeout) {
-            dw.check();
-            auto events = deviceGetQueueEventsHelper(dw.get(), std::vector<std::string>{queueName}, maxNumEvents, timeout);
+        }, py::arg("queueNames"), py::arg("timeout") = std::chrono::microseconds(-1), DOC(dai, Device, getQueueEvent))
+        
+        .def("getQueueEvent", [](Device& d, std::string queueName, std::chrono::microseconds timeout) {
+            auto events = deviceGetQueueEventsHelper(d, std::vector<std::string>{queueName}, std::numeric_limits<std::size_t>::max(), timeout);
             if(events.empty()) return std::string("");
             return events[0];
-        }, py::arg("queueName"), py::arg("maxNumEvents") = std::numeric_limits<std::size_t>::max(), py::arg("timeout") = std::chrono::microseconds(-1), DOC(dai, Device, getQueueEvent, 3))
-
-        .def("getQueueEvent", [](DeviceWrapper& dw, std::size_t maxNumEvents, std::chrono::microseconds timeout) {
-            dw.check();
-            auto events = deviceGetQueueEventsHelper(dw.get(), dw.get().getOutputQueueNames(), maxNumEvents, timeout);
+        }, py::arg("queueName"), py::arg("timeout") = std::chrono::microseconds(-1), DOC(dai, Device, getQueueEvent, 3))
+        
+        .def("getQueueEvent", [](Device& d, std::chrono::microseconds timeout) {
+            auto events = deviceGetQueueEventsHelper(d, d.getOutputQueueNames(), std::numeric_limits<std::size_t>::max(), timeout);
             if(events.empty()) return std::string("");
             return events[0];
-        }, py::arg("maxNumEvents") = std::numeric_limits<std::size_t>::max(), py::arg("timeout") = std::chrono::microseconds(-1), DOC(dai, Device, getQueueEvent, 4))
+        }, py::arg("timeout") = std::chrono::microseconds(-1), DOC(dai, Device, getQueueEvent, 4))
 
-        .def("setCallback", DeviceWrapper::wrap(&Device::setCallback), py::arg("name"), py::arg("callback"), DOC(dai, Device, setCallback))
-        .def("setLogLevel", DeviceWrapper::wrap(&Device::setLogLevel), py::arg("level"), DOC(dai, Device, setLogLevel))
-        .def("getLogLevel", DeviceWrapper::wrap(&Device::getLogLevel), DOC(dai, Device, getLogLevel))
-        .def("setSystemInformationLoggingRate", DeviceWrapper::wrap(&Device::setSystemInformationLoggingRate), py::arg("rateHz"), DOC(dai, Device, setSystemInformationLoggingRate))
-        .def("getSystemInformationLoggingRate", DeviceWrapper::wrap(&Device::getSystemInformationLoggingRate), DOC(dai, Device, getSystemInformationLoggingRate))
-        .def("getDdrMemoryUsage", DeviceWrapper::wrap(&Device::getDdrMemoryUsage), DOC(dai, Device, getDdrMemoryUsage))
-        .def("getCmxMemoryUsage", DeviceWrapper::wrap(&Device::getCmxMemoryUsage), DOC(dai, Device, getCmxMemoryUsage))
-        .def("getLeonCssHeapUsage", DeviceWrapper::wrap(&Device::getLeonCssHeapUsage), DOC(dai, Device, getLeonCssHeapUsage))
-        .def("getLeonMssHeapUsage", DeviceWrapper::wrap(&Device::getLeonMssHeapUsage), DOC(dai, Device, getLeonMssHeapUsage))
-        .def("getChipTemperature", DeviceWrapper::wrap(&Device::getChipTemperature), DOC(dai, Device, getChipTemperature))
-        .def("getLeonCssCpuUsage", DeviceWrapper::wrap(&Device::getLeonCssCpuUsage), DOC(dai, Device, getLeonCssCpuUsage))
-        .def("getLeonMssCpuUsage", DeviceWrapper::wrap(&Device::getLeonMssCpuUsage), DOC(dai, Device, getLeonMssCpuUsage))
-        .def("setLogOutputLevel", DeviceWrapper::wrap(&Device::setLogOutputLevel), py::arg("level"), DOC(dai, Device, setLogOutputLevel))
-        .def("getLogOutputLevel", DeviceWrapper::wrap(&Device::getLogOutputLevel), DOC(dai, Device, getLogOutputLevel))
-        .def("addLogCallback", DeviceWrapper::wrap(&Device::addLogCallback), py::arg("callback"), DOC(dai, Device, addLogCallback))
-        .def("removeLogCallback", DeviceWrapper::wrap(&Device::removeLogCallback), py::arg("callbackId"), DOC(dai, Device, removeLogCallback))
+        //.def("setCallback", DeviceWrapper::wrap(&Device::setCallback), py::arg("name"), py::arg("callback"))
+        .def("setLogLevel", &Device::setLogLevel, py::arg("level"), DOC(dai, Device, setLogLevel))
+        .def("getLogLevel", &Device::getLogLevel, DOC(dai, Device, getLogLevel))
+        .def("setSystemInformationLoggingRate", &Device::setSystemInformationLoggingRate, py::arg("rateHz"), DOC(dai, Device, setSystemInformationLoggingRate))
+        .def("getSystemInformationLoggingRate", &Device::getSystemInformationLoggingRate, DOC(dai, Device, getSystemInformationLoggingRate))
+        .def("getDdrMemoryUsage", &Device::getDdrMemoryUsage, DOC(dai, Device, getDdrMemoryUsage))
+        .def("getCmxMemoryUsage", &Device::getCmxMemoryUsage, DOC(dai, Device, getCmxMemoryUsage))
+        .def("getLeonCssHeapUsage", &Device::getLeonCssHeapUsage, DOC(dai, Device, getLeonCssHeapUsage))
+        .def("getLeonMssHeapUsage", &Device::getLeonMssHeapUsage, DOC(dai, Device, getLeonMssHeapUsage))
+        .def("getChipTemperature", &Device::getChipTemperature, DOC(dai, Device, getChipTemperature))
+        .def("getLeonCssCpuUsage", &Device::getLeonCssCpuUsage, DOC(dai, Device, getLeonCssCpuUsage))
+        .def("getLeonMssCpuUsage", &Device::getLeonMssCpuUsage, DOC(dai, Device, getLeonMssCpuUsage))
+        .def("setLogOutputLevel", &Device::setLogOutputLevel, py::arg("level"), DOC(dai, Device, setLogOutputLevel))
+        .def("getLogOutputLevel", &Device::getLogOutputLevel, DOC(dai, Device, getLogOutputLevel))
+        .def("addLogCallback", &Device::addLogCallback, py::arg("callback"), DOC(dai, Device, addLogCallback))
+        .def("removeLogCallback", &Device::removeLogCallback, py::arg("callbackId"), DOC(dai, Device, removeLogCallback))
         ;
 
 }

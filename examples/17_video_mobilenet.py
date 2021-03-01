@@ -5,6 +5,7 @@ import sys
 import cv2
 import depthai as dai
 import numpy as np
+from time import monotonic
 
 # Get argument first
 mobilenet_path = str((Path(__file__).parent / Path('models/mobilenet.blob')).resolve().absolute())
@@ -57,9 +58,8 @@ with dai.Device(pipeline) as device:
         return (np.clip(np.array(bbox), 0, 1) * norm_vals).astype(int)
 
 
-    def to_planar(arr: np.ndarray, shape: tuple) -> list:
-        return [val for channel in cv2.resize(arr, shape).transpose(2, 0, 1) for y_col in channel for val in y_col]
-
+    def to_planar(arr: np.ndarray, shape: tuple) -> np.ndarray:
+        return cv2.resize(arr, shape).transpose(2,0,1).flatten()
 
     cap = cv2.VideoCapture(video_path)
     while cap.isOpened():
@@ -67,9 +67,14 @@ with dai.Device(pipeline) as device:
         if not read_correctly:
             break
 
-        nn_data = dai.NNData()
-        nn_data.setLayer("data", to_planar(frame, (300, 300)))
-        q_in.send(nn_data)
+        tstamp = monotonic()
+        data = to_planar(frame, (300, 300))
+        img = dai.ImgFrame()
+        img.setData(data)
+        img.setTimestamp(tstamp)
+        img.setWidth(300)
+        img.setHeight(300)
+        q_in.send(img)
 
 
         in_nn = q_nn.tryGet()

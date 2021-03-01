@@ -1,10 +1,14 @@
 # DepthAI Python Library
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+[![](https://img.shields.io/pypi/v/depthai.svg)](https://pypi.org/project/depthai/)
+[![Python Wheel CI](https://github.com/luxonis/depthai-python/actions/workflows/main.yml/badge.svg?branch=gen2_develop)](https://github.com/luxonis/depthai-python/actions/workflows/main.yml)
+
 Python bindings for C++ depthai-core library
 
 ## Documentation
 
-Documentation is available over at [Luxonis DepthAI Python API](https://docs.luxonis.com/api/)
+Documentation is available over at [Luxonis DepthAI API](https://docs.luxonis.com/projects/api/en/latest/)
 
 ## Installation
 
@@ -17,8 +21,8 @@ python3 -m pip install --extra-index-url https://artifacts.luxonis.com/artifacto
 ## Building from source
 
 ### Dependencies
- - cmake >= 3.2
- - C/C++11 compiler (clang, gcc, msvc, ...)
+ - cmake >= 3.4
+ - C++14 compiler (clang, gcc, msvc, ...)
  - Python
 
 Along these, dependencies of depthai-core are also required
