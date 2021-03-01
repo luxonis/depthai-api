@@ -36,7 +36,7 @@ Source code
 
         Also `available on GitHub <https://github.com/luxonis/depthai-core/blob/gen2_develop/examples/src/camera_preview_example.cpp>`__
 
-        .. literalinclude:: ../../../depthai-core/examples/src/camera_preview_example.cpp
+        .. literalinclude:: ../../../depthai-core/examples/src/01_rgb_preview.cpp
            :language: python
            :linenos:
 

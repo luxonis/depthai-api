@@ -31,6 +31,24 @@ Source code
 
 Also `available on GitHub <https://github.com/luxonis/depthai-python/blob/gen2_develop/examples/02_mono_preview.py>`__
 
+.. tabs::
+
+    .. tab:: C++
+
+        Also `available on GitHub <https://github.com/luxonis/depthai-core/blob/gen2_develop/examples/src/mono_camera_example.cpp>`__
+
+        .. literalinclude:: ../../../depthai-core/examples/src/02_mono_preview.cpp
+           :language: python
+           :linenos:
+
+    .. tab:: Python
+
+        Also `available on GitHub <https://github.com/luxonis/depthai-python/blob/gen2_develop/examples/02_mono_preview.py>`__
+
+        .. literalinclude:: ../../../examples/02_mono_preview.py
+           :language: python
+           :linenos:
+
 .. literalinclude:: ../../../examples/02_mono_preview.py
    :language: python
    :linenos:
