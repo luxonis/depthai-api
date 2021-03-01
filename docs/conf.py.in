@@ -31,11 +31,12 @@ release = version
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx_tabs.tabs',
-    'sphinx-prompt', 'sphinx_substitution_extensions', # Substitute certain variables inside code blocks
+    "sphinx_tabs.tabs",
+    "sphinx-prompt", 'sphinx_substitution_extensions', # Substitute certain variables inside code blocks
     "breathe", # Generate sphinx documentation from doxygen
     "sphinx.ext.autodoc", # Generate documentation from python module
     "sphinx.ext.napoleon",
+    "autodocsumm",
     "sphinx.ext.viewcode",
     "sphinx.ext.intersphinx",
     "sphinx.ext.autosectionlabel",  # https://github.com/sphinx-doc/sphinx/issues/7697 wait for this and implement

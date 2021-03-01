@@ -5,3 +5,5 @@ git+git://github.com/VanDavv/rtd-redirects.git@3e7333898acad533b37c9de426f1f2ef2
 breathe==4.26.0
 git+git://github.com/luxonis/pybind11_mkdoc.git@master
 Sphinx-Substitution-Extensions==2020.9.30.0
+sphinx-autopackagesummary==1.3
+autodocsumm==0.2.2
