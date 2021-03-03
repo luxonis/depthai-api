@@ -49,8 +49,4 @@ Also `available on GitHub <https://github.com/luxonis/depthai-python/blob/gen2_d
            :language: python
            :linenos:
 
-.. literalinclude:: ../../../examples/02_mono_preview.py
-   :language: python
-   :linenos:
-
 .. include::  /includes/footer-short.rst
