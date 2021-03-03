@@ -113,3 +113,4 @@ add_python_example(21_mobilenet_device_side_decoding 21_mobilenet_device_side_de
 add_python_example(22_tiny_yolo_v3_device_side_decoding 22_tiny_yolo_v3_device_side_decoding.py "${tiny_yolo_v3_blob}")
 add_python_example(23_autoexposure_roi 23_autoexposure_roi.py "${mobilenet_blob}")
 add_python_example(24_opencv_support 24_opencv_support.py)
+add_python_example(25_system_information 25_system_information.py)

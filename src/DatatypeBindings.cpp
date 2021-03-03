@@ -318,6 +318,7 @@ void DatatypeBindings::bind(pybind11::module& m){
     rawSystemInformation
         .def(py::init<>())
         .def_readwrite("ddrMemoryUsage", &RawSystemInformation::ddrMemoryUsage)
+        .def_readwrite("cmxMemoryUsage", &RawSystemInformation::cmxMemoryUsage)
         .def_readwrite("leonCssMemoryUsage", &RawSystemInformation::leonCssMemoryUsage)
         .def_readwrite("leonMssMemoryUsage", &RawSystemInformation::leonMssMemoryUsage)
         .def_readwrite("leonCssCpuUsage", &RawSystemInformation::leonCssCpuUsage)
