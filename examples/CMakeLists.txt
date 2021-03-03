@@ -79,12 +79,20 @@ hunter_private_data(
     LOCATION construction_vest
 )
 
-# tiny-yolo neural network resource
+# tiny-YoloV3 neural network resource
 hunter_private_data(
     URL "https://artifacts.luxonis.com/artifactory/luxonis-depthai-data-local/network/tiny-yolo-v3_openvino_2021.2_6shave.blob"
     SHA1 "f0ac263a0d55c374e1892eea21c9b7d1170bde46"
     FILE "tiny-yolo-v3_openvino_2021.2_6shave.blob"
     LOCATION tiny_yolo_v3_blob
+)
+
+# tiny-YoloV4 neural network resource
+hunter_private_data(
+    URL "https://artifacts.luxonis.com/artifactory/luxonis-depthai-data-local/network/tiny-yolo-v4_openvino_2021.2_6shave.blob"
+    SHA1 "219d949610a5760e62a8458941e1300b81c3fe4a"
+    FILE "tiny-yolo-v4_openvino_2021.2_6shave.blob"
+    LOCATION tiny_yolo_v4_blob
 )
 
 
@@ -110,7 +118,8 @@ add_python_example(18_rgb_encoding_mobilenet 18_rgb_encoding_mobilenet.py "${mob
 add_python_example(19_mono_camera_control 19_mono_camera_control.py)
 add_python_example(20_color_rotate_warp 20_color_rotate_warp.py)
 add_python_example(21_mobilenet_device_side_decoding 21_mobilenet_device_side_decoding.py "${mobilenet_blob}")
-add_python_example(22_tiny_yolo_v3_device_side_decoding 22_tiny_yolo_v3_device_side_decoding.py "${tiny_yolo_v3_blob}")
+add_python_example(22_1_tiny_yolo_v3_device_side_decoding 22_1_tiny_yolo_v3_device_side_decoding.py "${tiny_yolo_v3_blob}")
+add_python_example(22_2_tiny_yolo_v4_device_side_decoding 22_2_tiny_yolo_v4_device_side_decoding.py "${tiny_yolo_v4_blob}")
 add_python_example(23_autoexposure_roi 23_autoexposure_roi.py "${mobilenet_blob}")
 add_python_example(24_opencv_support 24_opencv_support.py)
 add_python_example(25_system_information 25_system_information.py)
