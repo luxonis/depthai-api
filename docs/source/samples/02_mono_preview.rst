@@ -29,24 +29,22 @@ For additional information, please follow :ref:`Python API installation guide <I
 Source code
 ###########
 
-Also `available on GitHub <https://github.com/luxonis/depthai-python/blob/gen2_develop/examples/02_mono_preview.py>`__
-
 .. tabs::
 
     .. tab:: C++
-
-        Also `available on GitHub <https://github.com/luxonis/depthai-core/blob/gen2_develop/examples/src/02_mono_preview.cpp>`__
 
         .. literalinclude:: ../../../depthai-core/examples/src/02_mono_preview.cpp
            :language: python
            :linenos:
 
-    .. tab:: Python
+        Also `available on GitHub <https://github.com/luxonis/depthai-core/blob/develop/examples/src/02_mono_preview.cpp>`__
 
-        Also `available on GitHub <https://github.com/luxonis/depthai-python/blob/gen2_develop/examples/02_mono_preview.py>`__
+    .. tab:: Python
 
         .. literalinclude:: ../../../examples/02_mono_preview.py
            :language: python
            :linenos:
+
+        Also `available on GitHub <https://github.com/luxonis/depthai-python/blob/develop/examples/02_mono_preview.py>`__
 
 .. include::  /includes/footer-short.rst

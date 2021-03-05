@@ -32,10 +32,10 @@ This example also requires MobilenetSDD blob (:code:`mobilenet.blob` file) to wo
 Source code
 ###########
 
-Also `available on GitHub <https://github.com/luxonis/depthai-python/blob/gen2_develop/examples/23_autoexposure_roi.py>`__
-
 .. literalinclude:: ../../../examples/23_autoexposure_roi.py
    :language: python
    :linenos:
+
+Also `available on GitHub <https://github.com/luxonis/depthai-python/blob/develop/examples/23_autoexposure_roi.py>`__
 
 .. include::  /includes/footer-short.rst

@@ -38,24 +38,22 @@ For additional information, please follow :ref:`Python API installation guide <I
 Source code
 ###########
 
-Also `available on GitHub <https://github.com/luxonis/depthai-python/blob/gen2_develop/examples/04_rgb_encoding.py>`__
-
 .. tabs::
 
     .. tab:: C++
-
-        Also `available on GitHub <https://github.com/luxonis/depthai-core/blob/gen2_develop/examples/src/04_rgb_encoding.cpp>`__
 
         .. literalinclude:: ../../../depthai-core/examples/src/04_rgb_encoding.cpp
            :language: python
            :linenos:
 
-    .. tab:: Python
+        Also `available on GitHub <https://github.com/luxonis/depthai-core/blob/develop/examples/src/04_rgb_encoding.cpp>`__
 
-        Also `available on GitHub <https://github.com/luxonis/depthai-python/blob/gen2_develop/examples/04_rgb_encoding.py>`__
+    .. tab:: Python
 
         .. literalinclude:: ../../../examples/04_rgb_encoding.py
            :language: python
            :linenos:
+
+        Also `available on GitHub <https://github.com/luxonis/depthai-python/blob/develop/examples/04_rgb_encoding.py>`__
 
 .. include::  /includes/footer-short.rst

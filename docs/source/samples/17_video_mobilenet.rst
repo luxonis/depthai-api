@@ -37,10 +37,10 @@ and `construction_vest.mp4 <https://artifacts.luxonis.com/artifactory/luxonis-de
 Source code
 ###########
 
-Also `available on GitHub <https://github.com/luxonis/depthai-python/blob/gen2_develop/examples/17_video_mobilenet.py>`__
-
 .. literalinclude:: ../../../examples/17_video_mobilenet.py
    :language: python
    :linenos:
+
+Also `available on GitHub <https://github.com/luxonis/depthai-python/blob/develop/examples/17_video_mobilenet.py>`__
 
 .. include::  /includes/footer-short.rst

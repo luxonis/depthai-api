@@ -34,10 +34,10 @@ This example also requires MobilenetSDD blob (:code:`mobilenet.blob` file) to wo
 Source code
 ###########
 
-Also `available on GitHub <https://github.com/luxonis/depthai-python/blob/gen2_develop/examples/15_rgb_mobilenet_4k.py>`__
-
 .. literalinclude:: ../../../examples/15_rgb_mobilenet_4k.py
    :language: python
    :linenos:
+
+Also `available on GitHub <https://github.com/luxonis/depthai-python/blob/develop/examples/15_rgb_mobilenet_4k.py>`__
 
 .. include::  /includes/footer-short.rst

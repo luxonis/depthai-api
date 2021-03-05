@@ -30,10 +30,10 @@ For additional information, please follow :ref:`Python API installation guide <I
 Source code
 ###########
 
-Also `available on GitHub <https://github.com/luxonis/depthai-python/blob/gen2_develop/examples/03_depth_preview.py>`__
-
 .. literalinclude:: ../../../examples/03_depth_preview.py
    :language: python
    :linenos:
+
+Also `available on GitHub <https://github.com/luxonis/depthai-python/blob/develop/examples/03_depth_preview.py>`__
 
 .. include::  /includes/footer-short.rst

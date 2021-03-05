@@ -32,10 +32,10 @@ This example also requires MobilenetSDD blob (:code:`mobilenet.blob` file) to wo
 Source code
 ###########
 
-Also `available on GitHub <https://github.com/luxonis/depthai-python/blob/gen2_develop/examples/09_mono_mobilenet.py>`__
-
 .. literalinclude:: ../../../examples/09_mono_mobilenet.py
    :language: python
    :linenos:
+
+Also `available on GitHub <https://github.com/luxonis/depthai-python/blob/develop/examples/09_mono_mobilenet.py>`__
 
 .. include::  /includes/footer-short.rst

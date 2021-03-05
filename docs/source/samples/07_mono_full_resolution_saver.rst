@@ -29,10 +29,10 @@ For additional information, please follow :ref:`Python API installation guide <I
 Source code
 ###########
 
-Also `available on GitHub <https://github.com/luxonis/depthai-python/blob/gen2_develop/examples/07_mono_full_resolution_saver.py>`__
-
 .. literalinclude:: ../../../examples/07_mono_full_resolution_saver.py
    :language: python
    :linenos:
+
+Also `available on GitHub <https://github.com/luxonis/depthai-python/blob/develop/examples/07_mono_full_resolution_saver.py>`__
 
 .. include::  /includes/footer-short.rst

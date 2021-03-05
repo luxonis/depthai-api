@@ -35,10 +35,10 @@ For additional information, please follow :ref:`Python API installation guide <I
 Source code
 ###########
 
-Also `available on GitHub <https://github.com/luxonis/depthai-python/blob/gen2_develop/examples/14_color_camera_control.py>`__
-
 .. literalinclude:: ../../../examples/14_color_camera_control.py
    :language: python
    :linenos:
+
+Also `available on GitHub <https://github.com/luxonis/depthai-python/blob/develop/examples/14_color_camera_control.py>`__
 
 .. include::  /includes/footer-short.rst

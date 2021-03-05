@@ -35,10 +35,10 @@ This example also requires YOLOv3-tiny blob (:code:`tiny-yolo-v3_openvino_2021.2
 Source code
 ###########
 
-Also `available on GitHub <https://github.com/luxonis/depthai-python/blob/gen2_develop/examples/22_1_tiny_yolo_v3_device_side_decoding.py>`__
-
 .. literalinclude:: ../../../examples/22_1_tiny_yolo_v3_device_side_decoding.py
    :language: python
    :linenos:
+
+Also `available on GitHub <https://github.com/luxonis/depthai-python/blob/develop/examples/22_1_tiny_yolo_v3_device_side_decoding.py>`__
 
 .. include::  /includes/footer-short.rst

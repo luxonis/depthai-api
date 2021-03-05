@@ -42,10 +42,10 @@ This example also requires MobilenetSDD blob (:code:`mobilenet.blob` file) to wo
 Source code
 ###########
 
-Also `available on GitHub <https://github.com/luxonis/depthai-python/blob/gen2_develop/examples/12_rgb_encoding_mono_mobilenet_depth.py>`__
-
 .. literalinclude:: ../../../examples/12_rgb_encoding_mono_mobilenet_depth.py
    :language: python
    :linenos:
+
+Also `available on GitHub <https://github.com/luxonis/depthai-python/blob/develop/examples/12_rgb_encoding_mono_mobilenet_depth.py>`__
 
 .. include::  /includes/footer-short.rst

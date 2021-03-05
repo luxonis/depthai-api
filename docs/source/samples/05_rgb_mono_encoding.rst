@@ -36,10 +36,10 @@ For additional information, please follow :ref:`Python API installation guide <I
 Source code
 ###########
 
-Also `available on GitHub <https://github.com/luxonis/depthai-python/blob/gen2_develop/examples/05_rgb_mono_encoding.py>`__
-
 .. literalinclude:: ../../../examples/05_rgb_mono_encoding.py
    :language: python
    :linenos:
+
+Also `available on GitHub <https://github.com/luxonis/depthai-python/blob/develop/examples/05_rgb_mono_encoding.py>`__
 
 .. include::  /includes/footer-short.rst

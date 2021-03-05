@@ -37,10 +37,10 @@ For additional information, please follow :ref:`Python API installation guide <I
 Source code
 ###########
 
-Also `available on GitHub <https://github.com/luxonis/depthai-python/blob/gen2_develop/examples/13_encoding_max_limit.py>`__
-
 .. literalinclude:: ../../../examples/13_encoding_max_limit.py
    :language: python
    :linenos:
+
+Also `available on GitHub <https://github.com/luxonis/depthai-python/blob/develop/examples/13_encoding_max_limit.py>`__
 
 .. include::  /includes/footer-short.rst

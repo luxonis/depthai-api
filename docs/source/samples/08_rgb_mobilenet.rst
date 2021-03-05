@@ -36,7 +36,7 @@ Source code
 
     .. tab:: C++
 
-        Also `available on GitHub <https://github.com/luxonis/depthai-core/blob/gen2_develop/examples/src/08_rgb_mobilenet.cpp>`__
+        Also `available on GitHub <https://github.com/luxonis/depthai-core/blob/develop/examples/src/08_rgb_mobilenet.cpp>`__
 
         .. literalinclude:: ../../../depthai-core/examples/src/08_rgb_mobilenet.cpp
            :language: python
@@ -44,7 +44,7 @@ Source code
 
     .. tab:: Python
 
-        Also `available on GitHub <https://github.com/luxonis/depthai-python/blob/gen2_develop/examples/08_rgb_mobilenet.py>`__
+        Also `available on GitHub <https://github.com/luxonis/depthai-python/blob/develop/examples/08_rgb_mobilenet.py>`__
 
         .. literalinclude:: ../../../examples/08_rgb_mobilenet.py
            :language: python
