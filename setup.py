@@ -122,6 +122,8 @@ class CMakeBuild(build_ext):
                 freeMemory = 4000
         # Memcheck (guard if it fails)
 
+        # Force using single thread for build
+        freeMemory = 100
 
         # Configure and build
         # Windows
