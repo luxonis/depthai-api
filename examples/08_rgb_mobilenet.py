@@ -1,21 +1,15 @@
 #!/usr/bin/env python3
 
-from pathlib import Path
 import cv2
 import depthai as dai
 import numpy as np
 import time
 import argparse
+import blobconverter
 
-nnPathDefault = str((Path(__file__).parent / Path('models/mobilenet-ssd_openvino_2021.2_6shave.blob')).resolve().absolute())
 parser = argparse.ArgumentParser()
-parser.add_argument('nnPath', nargs='?', help="Path to mobilenet detection network blob", default=nnPathDefault)
 parser.add_argument('-s', '--sync', action="store_true", help="Sync RGB output with NN output", default=False)
 args = parser.parse_args()
-
-if not Path(nnPathDefault).exists():
-    import sys
-    raise FileNotFoundError(f'Required file/s not found, please run "{sys.executable} install_requirements.py"')
 
 # Start defining a pipeline
 pipeline = dai.Pipeline()
@@ -29,7 +23,7 @@ camRgb.setFps(40)
 # Define a neural network that will make predictions based on the source frames
 nn = pipeline.createMobileNetDetectionNetwork()
 nn.setConfidenceThreshold(0.5)
-nn.setBlobPath(args.nnPath)
+nn.setBlobPath(str(blobconverter.from_zoo("mobilenet-ssd", shaves=6)))
 nn.setNumInferenceThreads(2)
 nn.input.setBlocking(False)
 camRgb.preview.link(nn.input)

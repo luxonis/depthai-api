@@ -2,9 +2,10 @@
 
 from pathlib import Path
 import sys
+
+import blobconverter
 import cv2
 import depthai as dai
-import numpy as np
 import time
 
 '''
@@ -17,15 +18,6 @@ labelMap = ["background", "aeroplane", "bicycle", "bird", "boat", "bottle", "bus
             "diningtable", "dog", "horse", "motorbike", "person", "pottedplant", "sheep", "sofa", "train", "tvmonitor"]
 
 syncNN = True
-
-# Get argument first
-nnBlobPath = str((Path(__file__).parent / Path('models/mobilenet-ssd_openvino_2021.2_6shave.blob')).resolve().absolute())
-if len(sys.argv) > 1:
-    nnBlobPath = sys.argv[1]
-
-if not Path(nnBlobPath).exists():
-    import sys
-    raise FileNotFoundError(f'Required file/s not found, please run "{sys.executable} install_requirements.py"')
 
 # Start defining a pipeline
 pipeline = dai.Pipeline()
@@ -62,7 +54,7 @@ monoRight.setBoardSocket(dai.CameraBoardSocket.RIGHT)
 stereo.setOutputDepth(True)
 stereo.setConfidenceThreshold(255)
 
-spatialDetectionNetwork.setBlobPath(nnBlobPath)
+spatialDetectionNetwork.setBlobPath(str(blobconverter.from_zoo("mobilenet-ssd", shaves=6)))
 spatialDetectionNetwork.setConfidenceThreshold(0.5)
 spatialDetectionNetwork.input.setBlocking(False)
 spatialDetectionNetwork.setBoundingBoxScaleFactor(0.5)

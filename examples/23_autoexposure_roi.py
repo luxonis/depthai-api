@@ -1,22 +1,12 @@
 #!/usr/bin/env python3
 
-from pathlib import Path
-import sys
+import blobconverter
 import cv2
 import depthai as dai
 import numpy as np
 
 # Press WASD to move a manual ROI window for auto-exposure control.
 # Press N to go back to the region controlled by the NN detections.
-
-# Get argument first
-nnPath = str((Path(__file__).parent / Path('models/mobilenet-ssd_openvino_2021.2_6shave.blob')).resolve().absolute())
-if len(sys.argv) > 1:
-    nnPath = sys.argv[1]
-
-if not Path(nnPath).exists():
-    import sys
-    raise FileNotFoundError(f'Required file/s not found, please run "{sys.executable} install_requirements.py"')
 
 previewSize = (300, 300)
 
@@ -35,7 +25,7 @@ camControlIn.out.link(camRgb.inputControl)
 # Define a neural network that will make predictions based on the source frames
 nn = pipeline.createMobileNetDetectionNetwork()
 nn.setConfidenceThreshold(0.5)
-nn.setBlobPath(nnPath)
+nn.setBlobPath(str(blobconverter.from_zoo("mobilenet-ssd", shaves=6)))
 nn.setNumInferenceThreads(2)
 nn.input.setBlocking(False)
 camRgb.preview.link(nn.input)

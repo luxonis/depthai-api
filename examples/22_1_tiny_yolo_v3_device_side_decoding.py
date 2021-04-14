@@ -9,6 +9,8 @@ Tiny-yolo-v3 device side decoding demo
 
 from pathlib import Path
 import sys
+
+import blobconverter
 import cv2
 import depthai as dai
 import numpy as np
@@ -33,14 +35,15 @@ labelMap = [
 
 syncNN = True
 
-# Get argument first
-nnPath = str((Path(__file__).parent / Path('models/tiny-yolo-v3_openvino_2021.2_6shave.blob')).resolve().absolute())
-if len(sys.argv) > 1:
-    nnPath = sys.argv[1]
-
-if not Path(nnPath).exists():
-    import sys
+modelConfigPath = Path(__file__).parent / Path('models/tiny-yolo-v3.yml')
+if not modelConfigPath.exists():
     raise FileNotFoundError(f'Required file/s not found, please run "{sys.executable} install_requirements.py"')
+# Get argument first
+nnPath = str(blobconverter.from_config(
+    name="tiny-yolo-v3",
+    path=modelConfigPath,
+    shaves=6,
+))
 
 # Start defining a pipeline
 pipeline = dai.Pipeline()
