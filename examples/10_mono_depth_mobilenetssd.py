@@ -55,10 +55,9 @@ nn.input.setBlocking(False)
 manip.out.link(nn.input)
 
 # Create outputs
-depthOut = pipeline.createXLinkOut()
-depthOut.setStreamName("depth")
-
-stereo.disparity.link(depthOut.input)
+disparityOut = pipeline.createXLinkOut()
+disparityOut.setStreamName("disparity")
+stereo.disparity.link(disparityOut.input)
 
 xoutRight = pipeline.createXLinkOut()
 xoutRight.setStreamName("rectifiedRight")
@@ -79,7 +78,7 @@ with dai.Device(pipeline) as device:
 
     # Output queues will be used to get the grayscale / depth frames and nn data from the outputs defined above
     qRight = device.getOutputQueue("rectifiedRight", maxSize=4, blocking=False)
-    qDepth = device.getOutputQueue("depth", maxSize=4, blocking=False)
+    qDisparity = device.getOutputQueue("disparity", maxSize=4, blocking=False)
     qDet = device.getOutputQueue("nn", maxSize=4, blocking=False)
 
     rightFrame = None
@@ -104,11 +103,12 @@ with dai.Device(pipeline) as device:
         # Show the frame
         cv2.imshow(name, frame)
 
+    disparity_multiplier = 255 / 95 # Disparity range is 0..95
     while True:
         # Instead of get (blocking), we use tryGet (nonblocking) which will return the available data or None otherwise
         inRight = qRight.tryGet()
         inDet = qDet.tryGet()
-        inDepth = qDepth.tryGet()
+        inDisparity = qDisparity.tryGet()
 
         if inRight is not None:
             rightFrame = inRight.getCvFrame()
@@ -124,13 +124,13 @@ with dai.Device(pipeline) as device:
                     detection.xmin = 1 - detection.xmax
                     detection.xmax = 1 - swap
 
-        if inDepth is not None:
-            # Frame is transformed, the color map will be applied to highlight the depth info
+        if inDisparity is not None:
+            # Frame is transformed, normalized, and color map will be applied to highlight the depth info
+            disparityFrame = inDisparity.getFrame()
+            disparityFrame = (disparityFrame*disparity_multiplier).astype(np.uint8)
             # Available color maps: https://docs.opencv.org/3.4/d3/d50/group__imgproc__colormap.html
-            depthFrame = cv2.applyColorMap(inDepth.getFrame(), cv2.COLORMAP_JET)
-
-        if depthFrame is not None:
-            show("depth", depthFrame)
+            disparityFrame = cv2.applyColorMap(disparityFrame, cv2.COLORMAP_JET)
+            show("disparity", disparityFrame)
 
         if rightFrame is not None:
             show("rectified right", rightFrame)

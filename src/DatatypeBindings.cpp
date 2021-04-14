@@ -15,6 +15,7 @@
 #include "depthai/pipeline/datatype/SystemInformation.hpp"
 #include "depthai/pipeline/datatype/SpatialLocationCalculatorData.hpp"
 #include "depthai/pipeline/datatype/SpatialLocationCalculatorConfig.hpp"
+#include "depthai/pipeline/datatype/Tracklets.hpp"
 
 // depthai-shared
 #include "depthai-shared/datatype/RawBuffer.hpp"
@@ -28,6 +29,7 @@
 #include "depthai-shared/datatype/RawSpatialLocationCalculatorConfig.hpp"
 #include "depthai-shared/datatype/RawSpatialLocations.hpp"
 #include "depthai-shared/datatype/RawSpatialLocationCalculatorConfig.hpp"
+#include "depthai-shared/datatype/RawTracklets.hpp"
 
 
 //pybind
@@ -62,14 +64,14 @@ void DatatypeBindings::bind(pybind11::module& m){
         .def_readwrite("instanceNum", &RawImgFrame::instanceNum)
         .def_readwrite("sequenceNum", &RawImgFrame::sequenceNum)
         .def_property("ts",
-            [](const RawImgFrame& o){ 
-                double ts = o.ts.sec + o.ts.nsec / 1000000000.0; 
-                return ts; 
+            [](const RawImgFrame& o){
+                double ts = o.ts.sec + o.ts.nsec / 1000000000.0;
+                return ts;
             },
-            [](RawImgFrame& o, double ts){ 
-                o.ts.sec = ts; 
-                o.ts.nsec = (ts - o.ts.sec) * 1000000000.0;   
-            }  
+            [](RawImgFrame& o, double ts){
+                o.ts.sec = ts;
+                o.ts.nsec = (ts - o.ts.sec) * 1000000000.0;
+            }
         )
         ;
 
@@ -148,7 +150,7 @@ void DatatypeBindings::bind(pybind11::module& m){
         .value("FP32", TensorInfo::DataType::FP32)
         .value("I8", TensorInfo::DataType::I8)
         ;
-        
+
     py::enum_<TensorInfo::StorageOrder>(tensorInfo, "StorageOrder")
         .value("NHWC", TensorInfo::StorageOrder::NHWC)
         .value("NHCW", TensorInfo::StorageOrder::NHCW)
@@ -192,7 +194,7 @@ void DatatypeBindings::bind(pybind11::module& m){
         .def(py::init<>())
         .def_readwrite("detections", &RawSpatialImgDetections::detections)
         ;
-    
+
     // Bind RawImageManipConfig
     py::class_<RawImageManipConfig, RawBuffer, std::shared_ptr<RawImageManipConfig>> rawImageManipConfig(m, "RawImageManipConfig", DOC(dai, RawImageManipConfig));
     rawImageManipConfig
@@ -257,6 +259,29 @@ void DatatypeBindings::bind(pybind11::module& m){
         .def_readwrite("autoFocusMode", &RawCameraControl::autoFocusMode)
         .def_readwrite("lensPosition", &RawCameraControl::lensPosition)
         // TODO add more raw types here, not directly used
+        ;
+
+    py::class_<Tracklet> tracklet(m, "Tracklet", DOC(dai, Tracklet));
+    tracklet
+        .def(py::init<>())
+        .def_readwrite("roi", &Tracklet::roi)
+        .def_readwrite("id", &Tracklet::id)
+        .def_readwrite("label", &Tracklet::label)
+        .def_readwrite("status", &Tracklet::status)
+        .def_readwrite("srcImgDetection", &Tracklet::srcImgDetection)
+        .def_readwrite("spatialCoordinates", &Tracklet::spatialCoordinates)
+        ;
+
+    py::enum_<Tracklet::TrackingStatus>(tracklet, "TrackingStatus")
+        .value("NEW", Tracklet::TrackingStatus::NEW)
+        .value("TRACKED", Tracklet::TrackingStatus::TRACKED)
+        .value("LOST", Tracklet::TrackingStatus::LOST)
+        ;
+
+    // Bind RawTracklets
+    py::class_<RawTracklets, RawBuffer, std::shared_ptr<RawTracklets>> rawTacklets(m, "RawTracklets", DOC(dai, RawTracklets));
+    rawTacklets
+        .def_readwrite("tracklets", &RawTracklets::tracklets)
         ;
 
     // RawCameraControl enum bindings
@@ -385,7 +410,7 @@ void DatatypeBindings::bind(pybind11::module& m){
 
             py::array contiguous = numpy.attr("ascontiguousarray")(arr);
             frm.getData().resize(contiguous.nbytes());
-            memcpy(frm.getData().data(), contiguous.data(), contiguous.nbytes());     
+            memcpy(frm.getData().data(), contiguous.data(), contiguous.nbytes());
 
         }, py::arg("array"), "Copies array bytes to ImgFrame buffer")
         .def("getFrame", [](py::object &obj, bool copy){
@@ -401,14 +426,14 @@ void DatatypeBindings::bind(pybind11::module& m){
             // obj is "Python" object, which we used then to bind the numpy view lifespan to
             // creates numpy array (zero-copy) which holds correct information such as shape, ...
             auto& img = obj.cast<dai::ImgFrame&>();
-            
+
             // shape
             bool valid = img.getWidth() > 0 && img.getHeight() > 0;
             std::vector<std::size_t> shape = {img.getData().size()};
             py::dtype dtype = py::dtype::of<uint8_t>();
 
             switch(img.getType()){
-                
+
                 case ImgFrame::Type::RGB888i :
                 case ImgFrame::Type::BGR888i :
                     // HWC
@@ -438,12 +463,12 @@ void DatatypeBindings::bind(pybind11::module& m){
                 break;
 
                 case ImgFrame::Type::GRAYF16:
-                    shape = {img.getHeight(), img.getWidth()};  
+                    shape = {img.getHeight(), img.getWidth()};
                     dtype = py::dtype("half");
                 break;
 
                 case ImgFrame::Type::RAW16:
-                    shape = {img.getHeight(), img.getWidth()};  
+                    shape = {img.getHeight(), img.getWidth()};
                     dtype = py::dtype::of<uint16_t>();
                 break;
 
@@ -452,7 +477,7 @@ void DatatypeBindings::bind(pybind11::module& m){
                     shape = {img.getHeight(), img.getWidth(), 3};
                     dtype = py::dtype("half");
                 break;
-                
+
                 case ImgFrame::Type::RGBF16F16F16p:
                 case ImgFrame::Type::BGRF16F16F16p:
                     shape = {3, img.getHeight(), img.getWidth()};
@@ -463,7 +488,7 @@ void DatatypeBindings::bind(pybind11::module& m){
                 default:
                     shape = {img.getData().size()};
                     dtype = py::dtype::of<uint8_t>();
-                    break;                
+                    break;
             }
 
             // Check if enough data
@@ -479,13 +504,13 @@ void DatatypeBindings::bind(pybind11::module& m){
             if(copy){
                 py::array a(dtype, shape);
                 std::memcpy(a.mutable_data(), img.getData().data(), std::min( (long) (img.getData().size()), (long) (a.nbytes())));
-                return a; 
+                return a;
             } else {
                 return py::array(dtype, shape, img.getData().data(), obj);
             }
 
         }, py::arg("copy") = false, "Returns numpy array with shape as specified by width, height and type")
-        
+
         .def("getCvFrame", [](py::object &obj){
             using namespace pybind11::literals;
 
@@ -719,9 +744,10 @@ void DatatypeBindings::bind(pybind11::module& m){
         .def(py::init<>())
         .def_readwrite("config", &SpatialLocations::config)
         .def_readwrite("depthAverage", &SpatialLocations::depthAverage)
+        .def_readwrite("depthAveragePixelCount", &SpatialLocations::depthAveragePixelCount)
         .def_readwrite("spatialCoordinates", &SpatialLocations::spatialCoordinates)
         ;
-    
+
 
     py::class_<Rect> (m, "Rect", DOC(dai, Rect))
         .def(py::init<>())
@@ -771,5 +797,12 @@ void DatatypeBindings::bind(pybind11::module& m){
         .def("addROI", &SpatialLocationCalculatorConfig::addROI, py::arg("ROI"), DOC(dai, SpatialLocationCalculatorConfig, addROI))
         .def("getConfigData", &SpatialLocationCalculatorConfig::getConfigData, DOC(dai, SpatialLocationCalculatorConfig, getConfigData))
         ;
+
+    // Tracklets (after ConfigData)
+    py::class_<Tracklets, Buffer, std::shared_ptr<Tracklets>>(m, "Tracklets", DOC(dai, Tracklets))
+        .def(py::init<>())
+        .def_property("tracklets", [](Tracklets& track) { return &track.tracklets; }, [](Tracklets& track, std::vector<Tracklet> val) { track.tracklets = val; }, DOC(dai, Tracklets, tracklets))
+        ;
+
 
 }

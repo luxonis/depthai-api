@@ -1,4 +1,4 @@
-26.2 - MONO & MobilenetSSD with spatial data
+26.2 - Mono & MobilenetSSD with spatial data
 ============================================
 
 This example shows how to run MobileNetv2SSD on the rectified right input frame, and
@@ -10,6 +10,12 @@ setConfidenceThreshold - confidence threshold above which objects are detected
 
 Demo
 ####
+
+.. raw:: html
+
+    <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; height: auto;">
+        <iframe src="https://www.youtube.com/embed/SZz7NwM86uw" frameborder="0" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe>
+    </div>
 
 
 Setup

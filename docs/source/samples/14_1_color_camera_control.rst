@@ -1,5 +1,5 @@
-14 - Color Camera Control
-=========================
+14.1 - Color Camera Control
+===========================
 
 This example shows how to controll the device-side crop and camera triggers.
 An output is a displayed RGB cropped frame, that can be manipulated using the following keys:
@@ -9,6 +9,12 @@ An output is a displayed RGB cropped frame, that can be manipulated using the fo
 #. `w` will move the crop up
 #. `s` will move the crop down
 #. `c` will trigger a `still` event, causing the current frame to be captured and sent over `still` output from camera node
+#. `t` will trigger autofocus
+#. `f` will trigger autofocus continuously
+#. `e` will trigger autoexposure
+#. `i` and `o` will decrease/increase the exposure time
+#. `k` and `l` will decrease/increase the sensitivity iso
+#. `,` and `.` will decrease/increase the focus range
 
 Demo
 ####
@@ -27,9 +33,9 @@ Setup
 Source code
 ###########
 
-Also `available on GitHub <https://github.com/luxonis/depthai-python/blob/main/examples/14_color_camera_control.py>`__
+Also `available on GitHub <https://github.com/luxonis/depthai-python/blob/main/examples/14_1_color_camera_control.py>`__
 
-.. literalinclude:: ../../../examples/14_color_camera_control.py
+.. literalinclude:: ../../../examples/14_1_color_camera_control.py
    :language: python
    :linenos:
 

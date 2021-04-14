@@ -16,9 +16,15 @@ list(REMOVE_AT arguments 0)
 message(STATUS "arguments: ${arguments}")
 
 # Check if ENV variable TEST_TIMEOUT is set and use that rather than TIMEOUT_SECONDS
-if(DEFINED ENV{TEST_TIMEOUT})
+if(DEFINED ENV{TEST_TIMEOUT} AND NOT DEFINED FORCE_TIMEOUT_SECONDS)
     message(STATUS "Overriding timeout: ${TIMEOUT_SECONDS} with $ENV{TEST_TIMEOUT}")
     set(TIMEOUT_SECONDS $ENV{TEST_TIMEOUT})
+endif()
+
+# Check if FORCE_TIMEOUT_SECONDS is set, in that case respect that option
+if(FORCE_TIMEOUT_SECONDS)
+    message(STATUS "Forcing timeout of ${FORCE_TIMEOUT_SECONDS} seconds")
+    set(TIMEOUT_SECONDS ${FORCE_TIMEOUT_SECONDS})
 endif()
 
 # Execute the example (SIGTERM for now, could be improved with SIGINT -> SIGKILL)

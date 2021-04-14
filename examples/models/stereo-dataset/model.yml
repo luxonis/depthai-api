@@ -1,0 +1,31 @@
+# Copyright (c) 2021 Intel Corporation
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+description: >-
+  stereo dataset to test frames sent from host
+task_type: object_attributes
+files:
+  - name: dataset.zip
+    size: 2361554
+    sha256: 19abe0e4126fc32ea45441abaaf5bed39603493530f616f416531c1c2fe05b86
+    source:
+      $type: google_drive
+      id: 1mPyghc_0odGtSU2cROS1uLD-qwRU8aug
+postprocessing:
+  - $type: unpack_archive
+    format: zip
+    file: dataset.zip
+
+framework: dldt
+license: https://vision.middlebury.edu/stereo/data/scenes2014/

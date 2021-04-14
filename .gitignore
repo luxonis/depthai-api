@@ -25,9 +25,10 @@ _builds/
 
 #git
 *.orig
+*_REMOTE_*
+*_LOCAL_*
+*_BACKUP_*
+*_BASE_*
 
 #ci
 wheelhouse/
-
-# Example blobs/files
-examples/models/

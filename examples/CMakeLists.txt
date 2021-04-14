@@ -12,7 +12,8 @@ if(UNIX)
     set(SYS_PATH_SEPARATOR ":")
 endif()
 
-add_custom_target(install_requirements
+# Add a target to install_requirements (added to ALL)
+add_custom_target(install_requirements ALL
     COMMAND ${PYTHON_EXECUTABLE} "${CMAKE_CURRENT_LIST_DIR}/install_requirements.py" "--skip_depthai"
     DEPENDS ${TARGET_NAME}
     VERBATIM
@@ -70,7 +71,7 @@ if(DEPTHAI_PYTHON_TEST_EXAMPLES)
         "PYTHONPATH=$<TARGET_FILE_DIR:${TARGET_NAME}>${SYS_PATH_SEPARATOR}$ENV{PYTHONPATH}"
         # ASAN in case of sanitizers
         ${ASAN_ENVIRONMENT_VARS}
-        ${CMAKE_COMMAND} -DTIMEOUT_SECONDS=300 -P ${CMAKE_CURRENT_LIST_DIR}/cmake/ExecuteTestTimeout.cmake
+        ${CMAKE_COMMAND} -DFORCE_TIMEOUT_SECONDS=300 -P ${CMAKE_CURRENT_LIST_DIR}/cmake/ExecuteTestTimeout.cmake
         # Actual script to run
         ${PYTHON_EXECUTABLE} "${CMAKE_CURRENT_LIST_DIR}/install_requirements.py" "--skip_depthai"
     )
@@ -94,7 +95,9 @@ add_python_example(10_mono_depth_mobilenetssd 10_mono_depth_mobilenetssd.py)
 add_python_example(11_rgb_encoding_mono_mobilenet 11_rgb_encoding_mono_mobilenet.py)
 add_python_example(12_rgb_encoding_mono_mobilenet_depth 12_rgb_encoding_mono_mobilenet_depth.py)
 add_python_example(13_encoding_max_limit 13_encoding_max_limit.py)
-add_python_example(14_color_camera_control 14_color_camera_control.py)
+add_python_example(14_1_color_camera_control 14_1_color_camera_control.py)
+add_python_example(14_2_mono_camera_control 14_2_mono_camera_control.py)
+add_python_example(14_3_depth_crop_control 14_3_depth_crop_control.py)
 add_python_example(15_rgb_mobilenet_4k 15_rgb_mobilenet_4k.py)
 add_python_example(16_device_queue_event 16_device_queue_event.py)
 add_python_example(17_video_mobilenet 17_video_mobilenet.py)
@@ -113,3 +116,7 @@ add_python_example(26_3_spatial_tiny_yolo_v3 26_3_spatial_tiny_yolo.py)
 add_python_example(26_3_spatial_tiny_yolo_v4 26_3_spatial_tiny_yolo.py)
 add_python_example(27_spatial_location_calculator 27_spatial_location_calculator.py)
 add_python_example(28_camera_video_example 28_camera_video_example.py)
+add_python_example(29_1_object_tracker 29_1_object_tracker.py)
+add_python_example(29_2_spatial_object_tracker 29_2_spatial_object_tracker.py)
+add_python_example(29_3_object_tracker_video 29_3_object_tracker_video.py)
+add_python_example(30_stereo_depth_from_host 30_stereo_depth_from_host.py)

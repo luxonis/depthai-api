@@ -54,7 +54,7 @@ manip.out.link(spatialDetectionNetwork.input)
 # Create outputs
 xoutManip = pipeline.createXLinkOut()
 xoutManip.setStreamName("right")
-if(syncNN):
+if syncNN:
     spatialDetectionNetwork.passthrough.link(xoutManip.input)
 else:
     manip.out.link(xoutManip.input)
