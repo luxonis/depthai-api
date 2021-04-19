@@ -28,14 +28,10 @@ monoLeft.setBoardSocket(dai.CameraBoardSocket.LEFT)
 monoRight.setResolution(dai.MonoCameraProperties.SensorResolution.THE_400_P)
 monoRight.setBoardSocket(dai.CameraBoardSocket.RIGHT)
 
-outputDepth = True
-outputRectified = False
 lrcheck = False
 subpixel = False
 
 # StereoDepth
-stereo.setOutputDepth(outputDepth)
-stereo.setOutputRectified(outputRectified)
 stereo.setConfidenceThreshold(255)
 
 stereo.setLeftRightCheck(lrcheck)

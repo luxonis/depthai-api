@@ -39,7 +39,6 @@ camRight.setResolution(dai.MonoCameraProperties.SensorResolution.THE_400_P)
 depth = pipeline.createStereoDepth()
 depth.setConfidenceThreshold(255)
 # Note: the rectified streams are horizontally mirrored by default
-depth.setOutputRectified(True)
 depth.setRectifyEdgeFillColor(0) # Black, to better see the cutout
 camLeft.out.link(depth.left)
 camRight.out.link(depth.right)

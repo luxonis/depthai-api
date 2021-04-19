@@ -77,9 +77,7 @@ monoLeft.setResolution(dai.MonoCameraProperties.SensorResolution.THE_400_P)
 monoLeft.setBoardSocket(dai.CameraBoardSocket.LEFT)
 monoRight.setResolution(dai.MonoCameraProperties.SensorResolution.THE_400_P)
 monoRight.setBoardSocket(dai.CameraBoardSocket.RIGHT)
-stereo.setOutputDepth(True)
 stereo.setConfidenceThreshold(255)
-stereo.setOutputRectified(True)
 
 stereo.rectifiedRight.link(manip.inputImage)
 

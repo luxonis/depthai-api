@@ -50,7 +50,7 @@ jobs:
       - name: Configure project
         run: cmake -S . -B build -DDEPTHAI_PYTHON_FORCE_DOCSTRINGS=ON -DDEPTHAI_PYTHON_DOCSTRINGS_OUTPUT="$PWD/docstrings/depthai_python_docstring.hpp"
       - name: Build target 'pybind11_mkdoc'
-        run: cmake --build build --target pybind11_mkdoc --parallel
+        run: cmake --build build --target pybind11_mkdoc --parallel 8
       - name: Upload docstring artifacts
         uses: actions/upload-artifact@v2
         with:
@@ -247,7 +247,7 @@ jobs:
       - name: Build and install depthai-core
         run: |
           cmake -S depthai-core/ -B build_core -D CMAKE_BUILD_TYPE=Release -D CMAKE_TOOLCHAIN_FILE=$PWD/cmake/toolchain/pic.cmake
-          cmake --build build_core --target install --parallel
+          cmake --build build_core --target install --parallel 8
           echo "DEPTHAI_INSTALLATION_DIR=$PWD/build_core/install/" >> $GITHUB_ENV
 
       - name: Append build hash if not a tagged commit
@@ -309,7 +309,7 @@ jobs:
       - name: Build and install depthai-core
         run: |
           cmake -S depthai-core/ -B build_core -D CMAKE_BUILD_TYPE=Release -D CMAKE_TOOLCHAIN_FILE=$PWD/cmake/toolchain/pic.cmake
-          cmake --build build_core --target install --parallel
+          cmake --build build_core --target install --parallel 8
           echo "DEPTHAI_INSTALLATION_DIR=$PWD/build_core/install/" >> $GITHUB_ENV
 
       - name: Append build hash if not a tagged commit

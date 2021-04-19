@@ -29,7 +29,7 @@ right.setBoardSocket(dai.CameraBoardSocket.RIGHT)
 
 # Create a node that will produce the depth map (using disparity output as it's easier to visualize depth this way)
 stereo = pipeline.createStereoDepth()
-stereo.setOutputRectified(True)  # The rectified streams are horizontally mirrored by default
+# The rectified streams are horizontally mirrored by default
 stereo.setConfidenceThreshold(255)
 stereo.setRectifyEdgeFillColor(0)  # Black, to better see the cutout from rectification (black stripe on the edges)
 

@@ -101,6 +101,8 @@ void NodeBindings::bind(pybind11::module& m){
         .def_readonly("video", &ColorCamera::video, DOC(dai, node, ColorCamera, video))
         .def_readonly("preview", &ColorCamera::preview, DOC(dai, node, ColorCamera, preview))
         .def_readonly("still", &ColorCamera::still, DOC(dai, node, ColorCamera, still))
+        .def_readonly("isp", &ColorCamera::isp, DOC(dai, node, ColorCamera, isp))
+        .def_readonly("raw", &ColorCamera::raw, DOC(dai, node, ColorCamera, raw))
         .def("setCamId", [](ColorCamera& c, int64_t id) {
             // Issue an deprecation warning
             PyErr_WarnEx(PyExc_DeprecationWarning, "setCamId() is deprecated, use setBoardSocket() instead.", 1);
@@ -127,9 +129,12 @@ void NodeBindings::bind(pybind11::module& m){
         .def("getInterleaved", &ColorCamera::getInterleaved, DOC(dai, node, ColorCamera, getInterleaved))
         .def("setFp16", &ColorCamera::setFp16, py::arg("fp16"), DOC(dai, node, ColorCamera, setFp16))
         .def("getFp16", &ColorCamera::getFp16, DOC(dai, node, ColorCamera, getFp16))
-        .def("setPreviewSize", &ColorCamera::setPreviewSize, py::arg("width"), py::arg("height"), DOC(dai, node, ColorCamera, setPreviewSize))
-        .def("setVideoSize", &ColorCamera::setVideoSize, py::arg("width"), py::arg("height"), DOC(dai, node, ColorCamera, setVideoSize))
-        .def("setStillSize", &ColorCamera::setStillSize, py::arg("width"), py::arg("height"), DOC(dai, node, ColorCamera, setStillSize))
+        .def("setPreviewSize", static_cast<void(ColorCamera::*)(int,int)>(&ColorCamera::setPreviewSize), py::arg("width"), py::arg("height"), DOC(dai, node, ColorCamera, setPreviewSize))
+        .def("setPreviewSize", static_cast<void(ColorCamera::*)(std::tuple<int,int>)>(&ColorCamera::setPreviewSize), py::arg("size"), DOC(dai, node, ColorCamera, setPreviewSize, 2))
+        .def("setVideoSize", static_cast<void(ColorCamera::*)(int,int)>(&ColorCamera::setVideoSize), py::arg("width"), py::arg("height"), DOC(dai, node, ColorCamera, setVideoSize))
+        .def("setVideoSize", static_cast<void(ColorCamera::*)(std::tuple<int,int>)>(&ColorCamera::setVideoSize), py::arg("size"), DOC(dai, node, ColorCamera, setVideoSize, 2))
+        .def("setStillSize", static_cast<void(ColorCamera::*)(int,int)>(&ColorCamera::setStillSize), py::arg("width"), py::arg("height"), DOC(dai, node, ColorCamera, setStillSize))
+        .def("setStillSize", static_cast<void(ColorCamera::*)(std::tuple<int,int>)>(&ColorCamera::setStillSize), py::arg("size"), DOC(dai, node, ColorCamera, setStillSize, 2))
         .def("setResolution", &ColorCamera::setResolution, py::arg("resolution"), DOC(dai, node, ColorCamera, setResolution))
         .def("getResolution", &ColorCamera::getResolution, DOC(dai, node, ColorCamera, getResolution))
         .def("setFps", &ColorCamera::setFps, py::arg("fps"), DOC(dai, node, ColorCamera, setFps))
@@ -155,6 +160,13 @@ void NodeBindings::bind(pybind11::module& m){
         .def("getWaitForConfigInput", &ColorCamera::getWaitForConfigInput, DOC(dai, node, ColorCamera, getWaitForConfigInput))
         .def("setPreviewKeepAspectRatio", &ColorCamera::setPreviewKeepAspectRatio, py::arg("keep"), DOC(dai, node, ColorCamera, setPreviewKeepAspectRatio))
         .def("getPreviewKeepAspectRatio", &ColorCamera::getPreviewKeepAspectRatio, DOC(dai, node, ColorCamera, getPreviewKeepAspectRatio))
+        .def("setIspScale", static_cast<void(ColorCamera::*)(int,int)>(&ColorCamera::setIspScale), py::arg("numerator"), py::arg("denominator"), DOC(dai, node, ColorCamera, setIspScale))
+        .def("setIspScale", static_cast<void(ColorCamera::*)(std::tuple<int,int>)>(&ColorCamera::setIspScale), py::arg("scale"), DOC(dai, node, ColorCamera, setIspScale, 2))
+        .def("setIspScale", static_cast<void(ColorCamera::*)(int,int,int,int)>(&ColorCamera::setIspScale), py::arg("horizNum"), py::arg("horizDenom"), py::arg("vertNum"), py::arg("vertDenom"), DOC(dai, node, ColorCamera, setIspScale, 3))
+        .def("setIspScale", static_cast<void(ColorCamera::*)(std::tuple<int,int>,std::tuple<int,int>)>(&ColorCamera::setIspScale), py::arg("horizScale"), py::arg("vertScale"), DOC(dai, node, ColorCamera, setIspScale, 4))
+        .def("getIspSize", &ColorCamera::getIspSize, DOC(dai, node, ColorCamera, getIspSize))
+        .def("getIspWidth", &ColorCamera::getIspWidth, DOC(dai, node, ColorCamera, getIspWidth))
+        .def("getIspHeight", &ColorCamera::getIspHeight, DOC(dai, node, ColorCamera, getIspHeight))
         ;
 
 
@@ -291,22 +303,38 @@ void NodeBindings::bind(pybind11::module& m){
         .def("setEmptyCalibration",     &StereoDepth::setEmptyCalibration, DOC(dai, node, StereoDepth, setEmptyCalibration))
         .def("setInputResolution",      &StereoDepth::setInputResolution, py::arg("width"), py::arg("height"), DOC(dai, node, StereoDepth, setInputResolution))
         .def("setMedianFilter",         &StereoDepth::setMedianFilter, py::arg("median"), DOC(dai, node, StereoDepth, setMedianFilter))
+        .def("setDepthAlign",           static_cast<void(StereoDepth::*)(StereoDepthProperties::DepthAlign)>(&StereoDepth::setDepthAlign), py::arg("align"), DOC(dai, node, StereoDepth, setDepthAlign))
+        .def("setDepthAlign",           static_cast<void(StereoDepth::*)(CameraBoardSocket)>(&StereoDepth::setDepthAlign), py::arg("camera"), DOC(dai, node, StereoDepth, setDepthAlign, 2))
         .def("setConfidenceThreshold",  &StereoDepth::setConfidenceThreshold, py::arg("confThr"), DOC(dai, node, StereoDepth, setConfidenceThreshold))
         .def("setLeftRightCheck",       &StereoDepth::setLeftRightCheck, py::arg("enable"), DOC(dai, node, StereoDepth, setLeftRightCheck))
         .def("setSubpixel",             &StereoDepth::setSubpixel, py::arg("enable"), DOC(dai, node, StereoDepth, setSubpixel))
         .def("setExtendedDisparity",    &StereoDepth::setExtendedDisparity, py::arg("enable"), DOC(dai, node, StereoDepth, setExtendedDisparity))
         .def("setRectifyEdgeFillColor", &StereoDepth::setRectifyEdgeFillColor, py::arg("color"), DOC(dai, node, StereoDepth, setRectifyEdgeFillColor))
         .def("setRectifyMirrorFrame",   &StereoDepth::setRectifyMirrorFrame, py::arg("enable"), DOC(dai, node, StereoDepth, setRectifyMirrorFrame))
-        .def("setOutputRectified",      &StereoDepth::setOutputRectified, py::arg("enable"), DOC(dai, node, StereoDepth, setOutputRectified))
-        .def("setOutputDepth",          &StereoDepth::setOutputDepth, py::arg("enable"), DOC(dai, node, StereoDepth, setOutputDepth))
+        .def("setOutputRectified", [](StereoDepth& s, bool enable) {
+            // Issue an deprecation warning
+            PyErr_WarnEx(PyExc_DeprecationWarning, "setOutputRectified() is deprecated, the output is auto-enabled if used.", 1);
+            HEDLEY_DIAGNOSTIC_PUSH
+            HEDLEY_DIAGNOSTIC_DISABLE_DEPRECATED
+            s.setOutputRectified(enable);
+            HEDLEY_DIAGNOSTIC_POP
+        })
+        .def("setOutputDepth", [](StereoDepth& s, bool enable) {
+            // Issue an deprecation warning
+            PyErr_WarnEx(PyExc_DeprecationWarning, "setOutputDepth() is deprecated, the output is auto-enabled if used.", 1);
+            HEDLEY_DIAGNOSTIC_PUSH
+            HEDLEY_DIAGNOSTIC_DISABLE_DEPRECATED
+            s.setOutputDepth(enable);
+            HEDLEY_DIAGNOSTIC_POP
+        })
         ;
 
     // VideoEncoder node
     py::class_<VideoEncoder, Node, std::shared_ptr<VideoEncoder>>(m, "VideoEncoder", DOC(dai, node, VideoEncoder))
         .def_readonly("input", &VideoEncoder::input, DOC(dai, node, VideoEncoder, input), DOC(dai, node, VideoEncoder, input))
-        .def_readonly("bitstream", &VideoEncoder::bitstream, DOC(dai, node, VideoEncoder, bitstream), DOC(dai, node, VideoEncoder, bitstream))
-        .def("setDefaultProfilePreset", (void(VideoEncoder::*)(int, int, float, VideoEncoderProperties::Profile))&VideoEncoder::setDefaultProfilePreset, py::arg("width"), py::arg("height"), py::arg("fps"), py::arg("profile"), DOC(dai, node, VideoEncoder, setDefaultProfilePreset))
-        .def("setDefaultProfilePreset", (void(VideoEncoder::*)(std::tuple<int,int>, float, VideoEncoderProperties::Profile))&VideoEncoder::setDefaultProfilePreset, py::arg("size"), py::arg("fps"), py::arg("profile"), DOC(dai, node, VideoEncoder, setDefaultProfilePreset, 2))
+        .def_readonly("bitstream", &VideoEncoder::bitstream, DOC(dai, node, VideoEncoder, bitstream), DOC(dai, node, VideoEncoder, bitstream))        
+        .def("setDefaultProfilePreset", static_cast<void(VideoEncoder::*)(int, int, float, VideoEncoderProperties::Profile)>(&VideoEncoder::setDefaultProfilePreset), py::arg("width"), py::arg("height"), py::arg("fps"), py::arg("profile"), DOC(dai, node, VideoEncoder, setDefaultProfilePreset))
+        .def("setDefaultProfilePreset", static_cast<void(VideoEncoder::*)(std::tuple<int,int>, float, VideoEncoderProperties::Profile)>(&VideoEncoder::setDefaultProfilePreset), py::arg("size"), py::arg("fps"), py::arg("profile"), DOC(dai, node, VideoEncoder, setDefaultProfilePreset, 2))
         .def("setNumFramesPool", &VideoEncoder::setNumFramesPool, py::arg("frames"), DOC(dai, node, VideoEncoder, setNumFramesPool))
         .def("getNumFramesPool", &VideoEncoder::getNumFramesPool, DOC(dai, node, VideoEncoder, getNumFramesPool))
         .def("setRateControlMode", &VideoEncoder::setRateControlMode, py::arg("mode"), DOC(dai, node, VideoEncoder, setRateControlMode))
@@ -479,14 +507,14 @@ void NodeBindings::bind(pybind11::module& m){
     stereoDepthProperties
         .def_readwrite("calibration",             &StereoDepthProperties::calibration)
         .def_readwrite("median",                  &StereoDepthProperties::median)
+        .def_readwrite("depthAlign",              &StereoDepthProperties::depthAlign)
+        .def_readwrite("depthAlignCamera",        &StereoDepthProperties::depthAlignCamera)
         .def_readwrite("confidenceThreshold",     &StereoDepthProperties::confidenceThreshold)
         .def_readwrite("enableLeftRightCheck",    &StereoDepthProperties::enableLeftRightCheck)
         .def_readwrite("enableSubpixel",          &StereoDepthProperties::enableSubpixel)
         .def_readwrite("enableExtendedDisparity", &StereoDepthProperties::enableExtendedDisparity)
         .def_readwrite("rectifyMirrorFrame",      &StereoDepthProperties::rectifyMirrorFrame)
         .def_readwrite("rectifyEdgeFillColor",    &StereoDepthProperties::rectifyEdgeFillColor)
-        .def_readwrite("enableOutputRectified",   &StereoDepthProperties::enableOutputRectified)
-        .def_readwrite("enableOutputDepth",       &StereoDepthProperties::enableOutputDepth)
         .def_readwrite("width",                   &StereoDepthProperties::width)
         .def_readwrite("height",                  &StereoDepthProperties::height)
         ;
@@ -497,6 +525,13 @@ void NodeBindings::bind(pybind11::module& m){
         .value("KERNEL_5x5", StereoDepthProperties::MedianFilter::KERNEL_5x5)
         .value("KERNEL_7x7", StereoDepthProperties::MedianFilter::KERNEL_7x7)
         ;
+
+    py::enum_<StereoDepthProperties::DepthAlign>(stereoDepthProperties, "DepthAlign")
+        .value("RECTIFIED_RIGHT", StereoDepthProperties::DepthAlign::RECTIFIED_RIGHT)
+        .value("RECTIFIED_LEFT",  StereoDepthProperties::DepthAlign::RECTIFIED_LEFT)
+        .value("CENTER",          StereoDepthProperties::DepthAlign::CENTER)
+        ;
+
     // ALIAS
     m.attr("StereoDepth").attr("Properties") = stereoDepthProperties;
 
