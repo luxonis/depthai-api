@@ -37,6 +37,8 @@ void DeviceBootloaderBindings::bind(pybind11::module& m){
         .def("flash", &DeviceBootloader::flash, py::arg("progressCallback"), py::arg("pipeline"), DOC(dai, DeviceBootloader, flash))
         .def("flashDepthaiApplicationPackage", &DeviceBootloader::flashDepthaiApplicationPackage, py::arg("progressCallback"), py::arg("package"), DOC(dai, DeviceBootloader, flashDepthaiApplicationPackage))
         .def("flashBootloader", &DeviceBootloader::flashBootloader, py::arg("progressCallback"), py::arg("path") = "", DOC(dai, DeviceBootloader, flashBootloader))
+        .def("flashUsbBoot", &DeviceBootloader::flashUsbBoot, py::arg("progressCallback"), DOC(dai, DeviceBootloader, flashUsbBoot))
+        .def("switchToUsbBoot", &DeviceBootloader::switchToUsbBoot, DOC(dai, DeviceBootloader, switchToUsbBoot))
         .def("getVersion", &DeviceBootloader::getVersion, DOC(dai, DeviceBootloader, getVersion))
         .def("isEmbeddedVersion", &DeviceBootloader::isEmbeddedVersion, DOC(dai, DeviceBootloader, isEmbeddedVersion))
         ;
