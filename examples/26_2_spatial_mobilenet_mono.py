@@ -2,6 +2,8 @@
 
 from pathlib import Path
 import sys
+
+import blobconverter
 import cv2
 import depthai as dai
 import numpy as np
@@ -21,15 +23,6 @@ labelMap = ["background", "aeroplane", "bicycle", "bird", "boat", "bottle", "bus
 syncNN = True
 flipRectified = True
 
-# Get argument first
-nnPath = str((Path(__file__).parent / Path('models/mobilenet-ssd_openvino_2021.2_6shave.blob')).resolve().absolute())
-if len(sys.argv) > 1:
-    nnPath = sys.argv[1]
-
-if not Path(nnPath).exists():
-    import sys
-    raise FileNotFoundError(f'Required file/s not found, please run "{sys.executable} install_requirements.py"')
-
 # Start defining a pipeline
 pipeline = dai.Pipeline()
 
@@ -43,7 +36,7 @@ manip.initialConfig.setFrameType(dai.ImgFrame.Type.BGR888p)
 # Define a neural network that will make predictions based on the source frames
 spatialDetectionNetwork = pipeline.createMobileNetSpatialDetectionNetwork()
 spatialDetectionNetwork.setConfidenceThreshold(0.5)
-spatialDetectionNetwork.setBlobPath(nnPath)
+spatialDetectionNetwork.setBlobPath(str(blobconverter.from_zoo("mobilenet-ssd", shaves=6)))
 spatialDetectionNetwork.input.setBlocking(False)
 spatialDetectionNetwork.setBoundingBoxScaleFactor(0.5)
 spatialDetectionNetwork.setDepthLowerThreshold(100)

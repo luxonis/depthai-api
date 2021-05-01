@@ -2,21 +2,19 @@
 
 from pathlib import Path
 import sys
+
+import blobconverter
 import cv2
 import depthai as dai
 import numpy as np
 from time import monotonic
 
 # Get argument first
-parentDir = Path(__file__).parent
-nnPath = str((parentDir / Path('models/mobilenet-ssd_openvino_2021.2_8shave.blob')).resolve().absolute())
-videoPath = str((parentDir / Path('models/construction_vest.mp4')).resolve().absolute())
-if len(sys.argv) > 2:
-    nnPath = sys.argv[1]
-    videoPath = sys.argv[2]
+videoPath = str((Path(__file__).parent / Path('construction_vest.mp4')).resolve().absolute())
+if len(sys.argv) > 1:
+    videoPath = sys.argv[1]
 
-if not Path(nnPath).exists() or not Path(videoPath).exists():
-    import sys
+if not Path(videoPath).exists():
     raise FileNotFoundError(f'Required file/s not found, please run "{sys.executable} install_requirements.py"')
 
 # Start defining a pipeline
@@ -29,7 +27,7 @@ xinFrame.setStreamName("inFrame")
 # Define a neural network that will make predictions based on the source frames
 nn = pipeline.createMobileNetDetectionNetwork()
 nn.setConfidenceThreshold(0.5)
-nn.setBlobPath(nnPath)
+nn.setBlobPath(str(blobconverter.from_zoo("mobilenet-ssd", shaves=8)))
 nn.setNumInferenceThreads(2)
 nn.input.setBlocking(False)
 xinFrame.out.link(nn.input)

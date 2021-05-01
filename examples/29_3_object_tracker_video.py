@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 from pathlib import Path
+
+import blobconverter
 import cv2
 import depthai as dai
 import numpy as np
@@ -9,11 +11,9 @@ import argparse
 
 labelMap = ["person", ""]
 
-nnPathDefault = str((Path(__file__).parent / Path('models/person-detection-0201_openvino_2021.3_7shave.blob')).resolve().absolute())
-videoPathDefault = str((Path(__file__).parent / Path('models/construction_vest.mp4')).resolve().absolute())
+videoPathDefault = str((Path(__file__).parent / Path('construction_vest.mp4')).resolve().absolute())
 parser = argparse.ArgumentParser()
-parser.add_argument('-nnPath', help="Path to mobilenet detection network blob", default=nnPathDefault)
-parser.add_argument('-v', '--videoPath', help="Path to video frame", default=videoPathDefault)
+parser.add_argument('-vid', '--videoPath', help="Path to video frame", default=videoPathDefault)
 
 args = parser.parse_args()
 
@@ -54,7 +54,7 @@ detectionNetwork.out.link(nnOut.input)
 
 
 # setting node configs
-detectionNetwork.setBlobPath(args.nnPath)
+detectionNetwork.setBlobPath(str(blobconverter.from_zoo("person-detection-0201", shaves=7)))
 detectionNetwork.setConfidenceThreshold(0.5)
 
 manip.out.link(detectionNetwork.input)
