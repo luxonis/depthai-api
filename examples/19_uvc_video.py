@@ -1,13 +1,19 @@
 #!/usr/bin/env python3
 
-import depthai as dai
 import argparse
-import time
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-fb', '--flash-bootloader', default=False, action="store_true")
 parser.add_argument('-f',  '--flash-app',        default=False, action="store_true")
+parser.add_argument('-l',  '--logs',             default=False, action="store_true")
 args = parser.parse_args()
+
+if args.logs:
+    import os
+    os.environ["DEPTHAI_LEVEL"] = "info"
+
+import time
+import depthai as dai
 
 enable_4k = True
 
