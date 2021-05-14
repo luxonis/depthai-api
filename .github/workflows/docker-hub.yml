@@ -1,8 +1,7 @@
 name: Publish Docker image
 on:
   push:
-    tags:
-      - "*"
+    branches: [ enable_multiarch_build ]
 jobs:
   push_to_registry:
     name: Push Docker image to Docker Hub
