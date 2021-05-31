@@ -20,9 +20,9 @@ camRgb.setColorOrder(dai.ColorCameraProperties.ColorOrder.RGB)
 # Linking
 camRgb.preview.link(xoutRgb.input)
 
-# Connect to device and start pipeline
-with dai.Device(pipeline) as device:
-
+# Connect to the device
+with dai.Device(pipeline, dai.UsbSpeed.SUPER) as device:
+    # Print out available cameras
     print('Connected cameras: ', device.getConnectedCameras())
     # Print out usb speed
     print('Usb speed: ', device.getUsbSpeed().name)
@@ -31,7 +31,7 @@ with dai.Device(pipeline) as device:
     qRgb = device.getOutputQueue(name="rgb", maxSize=4, blocking=False)
 
     while True:
-        inRgb = qRgb.get()  # blocking call, will wait until a new data has arrived
+        inRgb = qRgb.get() # blocking call, will wait until a new data has arrived
 
         # Retrieve 'bgr' (opencv format) frame
         cv2.imshow("rgb", inRgb.getCvFrame())

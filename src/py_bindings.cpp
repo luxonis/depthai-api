@@ -40,16 +40,15 @@ PYBIND11_MODULE(depthai,m)
 
 
     // Add bindings
+    CommonBindings::bind(m);
     OpenVINOBindings::bind(m);
     AssetManagerBindings::bind(m);
     NodeBindings::bind(m);
     PipelineBindings::bind(m);
     XLinkConnectionBindings::bind(m);
-    DeviceBindings::bind(m);
-    CommonBindings::bind(m);
     CalibrationHandlerBindings::bind(m);
+    DeviceBindings::bind(m);
     DeviceBootloaderBindings::bind(m);
-    
     DatatypeBindings::bind(m);
     DataQueueBindings::bind(m);
     LogBindings::bind(m);
