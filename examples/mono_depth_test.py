@@ -5,7 +5,11 @@ import depthai as dai
 import time
 from pathlib import Path
 import numpy as np
+import argparse
 
+parser = argparse.ArgumentParser()
+parser.add_argument('--id', help="Enter the device number", required=True, type=int)
+args = parser.parse_args()
 # Closer-in minimum depth, disparity range is doubled (from 95 to 190):
 extended_disparity = False
 # Better accuracy for longer distance, fractional disparity 32-levels:
@@ -58,11 +62,15 @@ with dai.Device(pipeline) as device:
     qRight = device.getOutputQueue(name="right", maxSize=4, blocking=False)
     q = device.getOutputQueue(name="disparity", maxSize=4, blocking=False)
 
-    dirName = "mono_data"
-
+    file_name = "Dev-{}-Outdoor".format(args.id)
+    dirName   = "sunny_test"
+    Path(dirName + "/left").mkdir(parents=True, exist_ok=True)
+    Path(dirName + "/right").mkdir(parents=True, exist_ok=True)
+    Path(dirName + "/disp").mkdir(parents=True, exist_ok=True)
+    
     while True:
         # Instead of get (blocking), we use tryGet (nonblocking) which will return the available data or None otherwise
-        inLeft = qLeft.tryGet()
+        inLeft  = qLeft.tryGet()
         inRight = qRight.tryGet()
         inDepth = q.get() 
         frame = inDepth.getFrame()
@@ -75,10 +83,14 @@ with dai.Device(pipeline) as device:
         if inRight is not None:
             cv2.imshow("right", inRight.getCvFrame())
         
+        frame = cv2.applyColorMap(frame, cv2.COLORMAP_JET)
+        cv2.imshow("disparity_color", frame)
         key = cv2.waitKey(1)
         if key == ord('q'):
             break
         if key == ord('p'):
-            cv2.imwrite(f"{dirName}/right/{int(time.time() * 1000)}.png", inRight.getFrame())
-            cv2.imwrite(f"{dirName}/left/{int(time.time() * 1000)}.png", inLeft.getFrame())
-            cv2.imwrite(f"{dirName}/disp/{int(time.time() * 1000)}.png", frame)
+            ts = int(time.time() * 1000)
+            print("Capturing...")
+            cv2.imwrite(f"{dirName}/right/{file_name}.png", inRight.getFrame())
+            cv2.imwrite(f"{dirName}/left/{file_name}.png", inLeft.getFrame())
+            cv2.imwrite(f"{dirName}/disp/{file_name}.png", frame)
