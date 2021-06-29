@@ -61,6 +61,8 @@ monoRight.setBoardSocket(dai.CameraBoardSocket.RIGHT)
 
 # Setting node configs
 stereo.initialConfig.setConfidenceThreshold(255)
+stereo.setLeftRightCheck(True)
+stereo.setDepthAlign(dai.CameraBoardSocket.RGB)
 
 spatialDetectionNetwork.setBlobPath(nnBlobPath)
 spatialDetectionNetwork.setConfidenceThreshold(0.5)
