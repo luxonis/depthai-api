@@ -19,19 +19,18 @@ void OpenVINOBindings::bind(pybind11::module& m){
     ;
 
     // not strongly typed enum OpenVINO::Version
-    // previous step defined class 'OpenVINO' (variable 'openvino') 
+    // previous step defined class 'OpenVINO' (variable 'openvino')
     // which is used in defining the following enum (its scope)
-    // and that the values are available directly under OpenVINO.VERSION_2020_1, ...
+    // and that the values are available directly under OpenVINO.VERSION_2021_4, ...
     // they are exported
-    // By default, pybind creates strong typed enums, eg: OpenVINO::Version::VERSION_2020_1 
+    // By default, pybind creates strong typed enums, eg: OpenVINO::Version::VERSION_2021_4
     py::enum_<OpenVINO::Version>(openvino, "Version", DOC(dai, OpenVINO, Version))
-        .value("VERSION_2020_1", OpenVINO::Version::VERSION_2020_1)
-        .value("VERSION_2020_2", OpenVINO::Version::VERSION_2020_2)
         .value("VERSION_2020_3", OpenVINO::Version::VERSION_2020_3)
         .value("VERSION_2020_4", OpenVINO::Version::VERSION_2020_4)
         .value("VERSION_2021_1", OpenVINO::Version::VERSION_2021_1)
         .value("VERSION_2021_2", OpenVINO::Version::VERSION_2021_2)
         .value("VERSION_2021_3", OpenVINO::Version::VERSION_2021_3)
+        .value("VERSION_2021_4", OpenVINO::Version::VERSION_2021_4)
         .export_values()
     ;
 

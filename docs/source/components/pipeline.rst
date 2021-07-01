@@ -43,7 +43,7 @@ The reason behind this is that OpenVINO doesn't provide version inside the blob.
 
   pipeline = depthai.Pipeline()
   # Set the correct version:
-  pipeline.setOpenVINOVersion(depthai.OpenVINO.Version.VERSION_2020_1)
+  pipeline.setOpenVINOVersion(depthai.OpenVINO.Version.VERSION_2021_4)
 
 How to place it
 ###############
