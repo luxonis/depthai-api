@@ -5,13 +5,16 @@ Bootloader
 
 Depthai bootloader is a small program which aids in booting and updating bootloader or depthai application packages.
 
-To be able to run hostless, the Depthai bootloader must be first flashed to the devices flash.
+To be able to run in standalone mode (without a host), the Depthai bootloader must be first flashed to the devices flash.
+
+.. note::
+    Only devices that have "embedded" SoM (System on Module) can be run in standalone mode. These are `embedded devices <https://docs.luxonis.com/projects/hardware/en/latest/#pure-embedded-design>`__; `LUX-ESP32 <https://docs.luxonis.com/projects/hardware/en/latest/pages/DM1092.html>`__ and `LUX-D-WIFI <https://docs.luxonis.com/projects/hardware/en/latest/pages/DM1098OBC.html>`__.
+
 This step is required only once.
 
-Plug USB to the board
-Flash bootloader using DeviceBootloader::flashBootloader (Check Example at the bottom)
-Disconnect the board and switch the boot mode GPIO to the following settings: BOOT[4:0] : 01000 (see attached images for reference)
-Reassemble the board
+- Plug the USB cable into the device
+- Flash the bootloader using :code:`DeviceBootloader::flashBootloader` (Check code snippet below)
+- **If you have an older version of the depthai device**, you also need to disconnect the board and switch the boot mode GPIO to the following settings: BOOT[4:0] : 01000 (see attached images for reference). Reassemble the board afterwards
 
 Once the device has the bootloader flashed, it will perform the same as before. Running pipelines with a host connected doesn’t require any changes.
 
@@ -69,7 +72,7 @@ Following section will show an example of: Flashing bootloader (needed only once
         bootloader.flashBootloader(progress)
 
     .. note::
-        Make sure to switch GPIO BOOT mode settings (See image below for more details)
+        If you have an older version of the depthai device, make sure to switch GPIO BOOT mode settings (See image below for more details)
 
 #. **Flashing created pipeline**
 
@@ -84,8 +87,10 @@ Following section will show an example of: Flashing bootloader (needed only once
         progress = lambda p : print(f'Flashing progress: {p*100:.1f}%')
         bootloader.flash(progress, myExamplePipeline)
 
-
-GPIO boot settings. Boot settings must be set as following: BOOT[4:0] : 01000 and GPIO58 (WAKEUP): 0
+GPIO boot settings
+******************
+Boot settings must be set as following: BOOT[4:0] : 01000 and GPIO58 (WAKEUP): 0. **This is only needed
+for the older versions of the depthai devices, newer devices do not have this DIP switch.**
 
 .. image:: /_static/images/components/boot-depthai.jpeg
     :alt: boot-depthai
