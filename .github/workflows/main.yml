@@ -108,7 +108,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        python-version: [3.5, 3.6, 3.7, 3.8, 3.9]
+        python-version: [3.6, 3.7, 3.8, 3.9]
         python-architecture: [x64, x86]
     steps:
       - name: Cache .hunter folder
@@ -159,7 +159,7 @@ jobs:
     runs-on: macos-latest
     strategy:
       matrix:
-        python-version: [3.5, 3.6, 3.7, 3.8, 3.9]
+        python-version: [3.6, 3.7, 3.8, 3.9]
     steps:
       - name: Cache .hunter folder
         uses: actions/cache@v2
@@ -259,7 +259,7 @@ jobs:
           /opt/python/cp38-cp38/bin/python3.8 setup.py sdist --formats=gztar
           mv dist/* wheelhouse/audited/
       - name: Build wheels
-        run: for PYBIN in /opt/python/cp3*/bin; do "${PYBIN}/pip" wheel . -w ./wheelhouse/ --verbose; done
+        run: for PYBIN in /opt/python/cp3{6..9}*/bin; do "${PYBIN}/pip" wheel . -w ./wheelhouse/ --verbose; done
       - name: Audit wheels
         run: for whl in wheelhouse/*.whl; do auditwheel repair "$whl" --plat $PLAT -w wheelhouse/audited/; done
       - name: Archive wheel artifacts
@@ -316,7 +316,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v') != true
         run: echo "BUILD_COMMIT_HASH=${{github.sha}}" >> $GITHUB_ENV
       - name: Building wheels
-        run: for PYBIN in /opt/python/cp3*/bin; do "${PYBIN}/pip" wheel . -w ./wheelhouse/ --verbose; done
+        run: for PYBIN in /opt/python/cp3{6..9}*/bin; do "${PYBIN}/pip" wheel . -w ./wheelhouse/ --verbose; done
       - name: Auditing wheels
         run: for whl in wheelhouse/*.whl; do auditwheel repair "$whl" --plat $PLAT -w wheelhouse/audited/; done
       - name: Archive wheel artifacts

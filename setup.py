@@ -16,7 +16,7 @@ from distutils.version import LooseVersion
 here = os.path.abspath(os.path.dirname(__file__))
 version_file = os.path.join(here, "generated", "version.py")
 os.makedirs(os.path.join(here, "generated"), exist_ok=True)
-if os.environ.get('CI') != None : 
+if os.environ.get('CI') != None :
     ### If CI build, respect 'BUILD_COMMIT_HASH' to determine final version if set
     final_version = find_version.get_package_version()
     if os.environ.get('BUILD_COMMIT_HASH') != None:
@@ -67,7 +67,7 @@ class CMakeExtension(Extension):
 
 
 class CMakeBuild(build_ext):
-    
+
     def run(self):
         try:
             out = subprocess.check_output(['cmake', '--version'])
@@ -133,13 +133,13 @@ class CMakeBuild(build_ext):
         if platform.system() == "Windows":
             cmake_args += ['-DCMAKE_LIBRARY_OUTPUT_DIRECTORY_{}={}'.format(cfg.upper(), extdir)]
             cmake_args += ['-DCMAKE_TOOLCHAIN_FILE={}'.format(os.path.dirname(os.path.abspath(__file__)) + '/cmake/toolchain/msvc.cmake')]
-            
+
             # Detect whether 32 / 64 bit Python is used and compile accordingly
             if sys.maxsize > 2**32:
                 cmake_args += ['-A', 'x64']
             else:
                 cmake_args += ['-A', 'Win32']
-            
+
             # Add flag to build with maximum available threads
             build_args += ['--', '/m']
         # Unix
@@ -155,13 +155,13 @@ class CMakeBuild(build_ext):
             num_threads = (freeMemory // 1000)
             num_threads = min(num_threads, max_threads)
             if num_threads <= 0:
-                num_threads = 1            
+                num_threads = 1
             build_args += ['--', '-j' + str(num_threads)]
             cmake_args += ['-DHUNTER_JOBS_NUMBER=' + str(num_threads)]
 
         env = os.environ.copy()
         env['CXXFLAGS'] = '{} -DVERSION_INFO=\\"{}\\"'.format(env.get('CXXFLAGS', ''), self.distribution.get_version())
-        
+
         # Add additional cmake args from environment
         if 'CMAKE_ARGS' in os.environ:
             cmake_args += [os.environ['CMAKE_ARGS']]
@@ -200,7 +200,6 @@ setup(
         "Operating System :: Unix",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
@@ -210,5 +209,5 @@ setup(
         "Topic :: Scientific/Engineering",
         "Topic :: Software Development",
     ],
-    python_requires='>=3.5',
+    python_requires='>=3.6',
 )

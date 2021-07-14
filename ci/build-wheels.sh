@@ -7,7 +7,7 @@ yum install -y libusb1-devel
 #yum remove -y libusb1
 
 # Compile wheels
-for PYBIN in /opt/python/cp3*/bin; do
+for PYBIN in /opt/python/cp3{6..9}*/bin; do
     #"${PYBIN}/pip" install -r /io/requirements.txt
     "${PYBIN}/pip" wheel /io/ -w wheelhouse/
 done
