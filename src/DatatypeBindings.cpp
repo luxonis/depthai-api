@@ -80,6 +80,16 @@ void DatatypeBindings::bind(pybind11::module& m){
                 o.ts.nsec = (ts - o.ts.sec) * 1000000000.0;
             }
         )
+        .def_property("tsDevice",
+            [](const RawImgFrame& o){
+                double ts = o.tsDevice.sec + o.tsDevice.nsec / 1000000000.0;
+                return ts;
+            },
+            [](RawImgFrame& o, double ts){
+                o.tsDevice.sec = ts;
+                o.tsDevice.nsec = (ts - o.tsDevice.sec) * 1000000000.0;
+            }
+        )
         ;
 
     py::enum_<RawImgFrame::Type>(rawImgFrame, "Type")
@@ -521,6 +531,7 @@ void DatatypeBindings::bind(pybind11::module& m){
         .def(py::init<>())
         // getters
         .def("getTimestamp", &ImgFrame::getTimestamp, DOC(dai, ImgFrame, getTimestamp))
+        .def("getTimestampDevice", &ImgFrame::getTimestampDevice, DOC(dai, ImgFrame, getTimestampDevice))
         .def("getInstanceNum", &ImgFrame::getInstanceNum, DOC(dai, ImgFrame, getInstanceNum))
         .def("getCategory", &ImgFrame::getCategory, DOC(dai, ImgFrame, getCategory))
         .def("getSequenceNum", &ImgFrame::getSequenceNum, DOC(dai, ImgFrame, getSequenceNum))
